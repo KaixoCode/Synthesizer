@@ -12,8 +12,12 @@ private:
     double fm = 0;
     double am = 1;
 
-public:
     double frequency = 60; // Hz
+public:
+
+    Oscillator& Frequency(double f);
+    double Frequency();
+
 
     Wavetables::WaveTable* waveTable = new Wavetables::Sine;
 
@@ -26,7 +30,7 @@ public:
 
     void ResetPhase();
 
-    void FM(Sample, double); // Frequency modulate
-    void AM(Sample); // Amplitude modulate
+    Oscillator& FM(Sample, double); // Frequency modulate
+    Oscillator& AM(Sample); // Amplitude modulate
 };
 

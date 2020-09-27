@@ -4,7 +4,7 @@
 
 Sample Oscillator::NextSample()
 {
-    phase = std::fmod(phase + fm + (frequency) * TWO_PI / Audio::SAMPLE_RATE, TWO_PI);
+    phase = std::fmod(TWO_PI + phase + fm + (frequency) * TWO_PI / Audio::SAMPLE_RATE, TWO_PI);
     sample = waveTable->value(phase) * am;
     fm = 0;
     am = 1;
@@ -21,12 +21,25 @@ void Oscillator::ResetPhase()
     phase = 0;
 }
 
-void Oscillator::FM(Sample fm, double amt) 
+Oscillator& Oscillator::FM(Sample fm, double amt)
 {
     this->fm = fm * amt;
+    return *this;
 }
 
-void Oscillator::AM(Sample am)
+Oscillator& Oscillator::AM(Sample am)
 {
     this->am = am;
+    return *this;
+}
+
+Oscillator& Oscillator::Frequency(double f) 
+{
+    frequency = f;
+    return *this;
+}
+
+double Oscillator::Frequency()
+{
+    return frequency;
 }
