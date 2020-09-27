@@ -6,7 +6,7 @@ add_subdirectory (libs)
 file(GLOB SOURCE
  "src/main.cpp"
 
- "src/utils/Constants.hpp"
+ "src/utils/Utils.hpp"
 
  "src/utils/audio/Audio.hpp"
  "src/utils/audio/Audio.cpp"
