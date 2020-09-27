@@ -114,24 +114,11 @@ namespace Audio {
 	const unsigned int BUFFER_SIZE = 512;
 	const unsigned int CHANNELS = 1;
 
-	//short-hand for complex<double> representing a+bi
-	typedef std::complex<float> ComplexVal;
-
-	//array of complex-valued samples
-	typedef std::valarray<ComplexVal> SampleArray;
-
-	// Phasedata for outgoing 2 channel audio stream
-	typedef struct {
-		float left_phase;
-		float right_phase;
-	} PaPhaseData;
-
 	static int playCallback(const void*, void*, unsigned long, const PaStreamCallbackTimeInfo*, PaStreamCallbackFlags, void*);
 
 	// Buffers
 	static float buffer[BUFFER_SIZE];
 
-	SampleArray samplesLeft, samplesRight;
 	PaError err;
 	PaStream* stream;
 
