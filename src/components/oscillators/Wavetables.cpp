@@ -14,5 +14,5 @@ double Wavetables::Sine::value(double phase)
 
 double Wavetables::Saw::value(double phase)
 {
-    return (-phase / TWO_PI) + 0.5;
+    return 2 * ((-phase / TWO_PI) + 0.5);
 }
