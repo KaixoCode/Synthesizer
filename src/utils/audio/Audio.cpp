@@ -109,7 +109,7 @@ namespace Audio {
 	static int playCallback(const void*, void*, unsigned long, const PaStreamCallbackTimeInfo*, PaStreamCallbackFlags, void*);
 
 	// Buffers
-	static float buffer[BUFFER_SIZE];
+	static float buffer[CHANNELS * BUFFER_SIZE];
 
 	PaError err;
 	PaStream* stream;
@@ -128,7 +128,7 @@ namespace Audio {
 		if (outputParameters.device == paNoDevice) {
 			return -1;
 		}
-		outputParameters.channelCount = 1;       /* stereo output */
+		outputParameters.channelCount = CHANNELS;       /* stereo output */
 		outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
 		outputParameters.suggestedLatency = 0.050; // Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
 		outputParameters.hostApiSpecificStreamInfo = NULL;
@@ -160,7 +160,7 @@ namespace Audio {
 		// Call the callback method to request data
 		if (Callback) Callback(buffer);
 
-		for (i = 0; i < framesPerBuffer; i++) {
+		for (i = 0; i < CHANNELS*framesPerBuffer; i++) {
 			*out++ = buffer[i];
 		}
 		return 0;
