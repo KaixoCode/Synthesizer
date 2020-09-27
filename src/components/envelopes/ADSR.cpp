@@ -7,7 +7,7 @@
 
 Sample ADSR::NextSample()
 {
-    if (phase >= 0 && (phase < A + D || !gate)) phase += 1.0/Audio::SAMPLE_RATE;
+    if (phase >= 0 && (phase < A + D || !gate)) phase += 1.0/(double)SAMPLE_RATE;
     else if (gate)
         phase = A + D;
     sample = phase < 0 ? 0 : phase < A ? std::pow(phase / A, AC) : phase <= A + D ? 1 - (1-S)*std::pow((phase-A) / D, DC) : phase < A + D + R ? S - S*std::pow((phase-A-D) / R, RC) : 0;

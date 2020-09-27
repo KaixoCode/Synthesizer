@@ -13,5 +13,6 @@ protected:
 public:
     Filter& Cutoff(double);
     Sample Apply(Sample a);
+    Sample operator>>(Sample a) { return Apply(a); };
     Sample GetSample() override;
 };
