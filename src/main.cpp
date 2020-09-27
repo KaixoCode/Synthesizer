@@ -12,9 +12,8 @@ Oscillator osc;
 ADSR env{ 0, 0.6, 0, 0.1 };
 ADSR env2{ 0, 0.3, 0, 0 };
 Oscillator fmosc;
-LPF filter;
-LPF filter2;
-HPF filter3;
+LPF lpf;
+LPF lpf2;
 
 double params[10];
 bool pressed = false;
@@ -106,29 +105,11 @@ int main(void) {
     return 0;
 }
 
-void AudioCallback(float *buffer)
+void AudioCallback(float* buffer)
 {
-    for (int i = 0; i < Audio::BUFFER_SIZE;)
-        buffer[i++] =
-        filter3.Cutoff(20)
-        .Apply(
-            filter2.Cutoff(16000)
-            .Apply(
-                env.Apply(
-                    filter.Cutoff(
-                        env2.NextSample() * 10000 + 1000
-                    )
-                    .Apply(
-                        osc.FM(
-                            fmosc.Frequency(
-                                osc.Frequency() * params[1] * 8.0
-                            )
-                            .NextSample(),
-                            params[0] * 0.1
-                        )
-                        .NextSample()
-                    )
-                )
-            )
-        );
+    for (int i = 0; i < BUFFER_SIZE;) buffer[i++] =
+        lpf2.Cutoff(20000) >> ( // Filter everything above 20kHz away
+            env >> ( // Apply the envelope
+                lpf.Cutoff(++env2 * 10000 + 1000) >> (// Lowpass filter whose cutoff is modulated by env2.
+                    ++osc.FM(++fmosc.Frequency(osc.Frequency() * params[1] * 8.0), params[0] * 0.1)))); // Osc is FMed by fmosc
 }
