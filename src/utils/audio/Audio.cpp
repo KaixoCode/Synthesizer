@@ -110,7 +110,7 @@ namespace Audio {
 namespace Audio {
 
 	// Playback info
-	const unsigned int SAMPLE_RATE = 44100;
+	const unsigned int SAMPLE_RATE = 44100 * 8;
 	const unsigned int BUFFER_SIZE = 512;
 	const unsigned int CHANNELS = 1;
 
