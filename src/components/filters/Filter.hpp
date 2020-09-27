@@ -3,9 +3,11 @@
 
 class Filter : public Component
 {
-    Sample x[6];
+
+    Sample x[3];
     Sample y[3];
 public:
+    double cutoff = 1000;
 
     Sample Apply(Sample a);
     Sample NextSample() override;

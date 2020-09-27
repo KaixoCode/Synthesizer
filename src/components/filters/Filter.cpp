@@ -1,5 +1,6 @@
 #include "Filter.hpp"
-
+#include "../../utils/audio/Audio.hpp"
+#include <cmath>
 
 Sample Filter::Apply(Sample a)
 {
@@ -9,7 +10,19 @@ Sample Filter::Apply(Sample a)
 
 Sample Filter::NextSample()
 {	
-	y[0] = y[2] * 0.19582 + y[1] * 0.36953 + 0.20657 * x[0] + 0.41314 * x[1] + 0.20657 * x[2];
+	double Q = 16.0;
+	double w0 = TWO_PI * (cutoff / (double) Audio::SAMPLE_RATE);
+	double cos = std::cos(w0);
+	double a = (std::sin(w0)) / (2.0 * Q);
+	double b0 = (1.0 - cos) / 2.0;
+	double b1 = (1.0 - cos);
+	double b2 = b0;
+	double a0 = 1.0 + a;
+	double a1 = -2.0 * cos;
+	double a2 = 1.0 - a;
+
+
+	y[0] = (b0/a0) * x[0] + (b1/a0) * x[1] + (b2/a0) * x[2] - (a1/a0) * y[1] - (a2/a0) * y[2];
 
 	for (int i = 0; i < sizeof(y) / sizeof(double) - 1; i++)
 		y[i + 1] = y[i];
