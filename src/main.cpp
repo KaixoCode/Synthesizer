@@ -8,7 +8,8 @@
 void AudioCallback(float *buffer);
 
 Oscillator osc;
-ADSR env;
+ADSR env{ 0, 0.6, 0, 0 };
+ADSR filt{ 0, 0.3, 0, 0 };
 Oscillator fmosc;
 Filter filter;
 
@@ -42,6 +43,8 @@ class Synth : Window
             if (!trig) {
                 env.Trigger();
                 osc.ResetPhase();
+                fmosc.ResetPhase();
+                filt.Trigger();
                 env.Gate(true);
                 trig = true;
             }
@@ -62,7 +65,9 @@ void MidiPress(int note, int velocity) {
     a++;
     osc.frequency = Midi::NoteToFreq(note);
     osc.ResetPhase();
+    fmosc.ResetPhase();
     env.Trigger();
+    filt.Trigger();
     env.Gate(true);
 }
 
@@ -104,11 +109,12 @@ void AudioCallback(float *buffer)
         Sample mix = 0;
 
         fmosc.frequency = osc.frequency * params[1] * 8.0;
-        //osc.FM(fmosc.NextSample(), params[0] * 0.1);
+        osc.FM(fmosc.NextSample(), params[0] * 0.1);
+        filter.cutoff = filt.NextSample() * 10000 + 1000;
         Sample o1 = env.Apply(filter.Apply(osc.NextSample()));
         
         
 
-        buffer[i++] = o1;
+        buffer[i++] = o1 * 0.5;
     }
 }
