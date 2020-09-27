@@ -2,16 +2,19 @@
 #include "utils/audio/Audio.hpp"
 #include "utils/midi/Midi.hpp"
 #include "components/envelopes/ADSR.hpp"
-#include "components/filters/Filter.hpp"
+#include "components/filters/LPF.hpp"
+#include "components/filters/HPF.hpp"
 #include "components/oscillators/Oscillator.hpp"
 
 void AudioCallback(float *buffer);
 
 Oscillator osc;
-ADSR env{ 0, 0.6, 0, 0 };
-ADSR filt{ 0, 0.3, 0, 0 };
+ADSR env{ 0, 0.6, 0, 0.1 };
+ADSR env2{ 0, 0.3, 0, 0 };
 Oscillator fmosc;
-Filter filter;
+LPF filter;
+LPF filter2;
+HPF filter3;
 
 double params[10];
 bool pressed = false;
@@ -39,12 +42,12 @@ class Synth : Window
         params[1] = knob2.val;
         if (sensor1.val != 1) 
         {
-            osc.frequency = Midi::NoteToFreq(Midi::NoteToScale(sensor1.val * 36 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7));
+            osc.Frequency(Midi::NoteToFreq(Midi::NoteToScale(sensor1.val * 36 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7)));
             if (!trig) {
                 env.Trigger();
                 osc.ResetPhase();
                 fmosc.ResetPhase();
-                filt.Trigger();
+                env2.Trigger();
                 env.Gate(true);
                 trig = true;
             }
@@ -63,11 +66,11 @@ class Synth : Window
 int a = 0;
 void MidiPress(int note, int velocity) {
     a++;
-    osc.frequency = Midi::NoteToFreq(note);
+    osc.Frequency(Midi::NoteToFreq(note));
     osc.ResetPhase();
     fmosc.ResetPhase();
     env.Trigger();
-    filt.Trigger();
+    env2.Trigger();
     env.Gate(true);
 }
 
@@ -105,16 +108,27 @@ int main(void) {
 
 void AudioCallback(float *buffer)
 {
-    for (int i = 0; i < Audio::BUFFER_SIZE;) {
-        Sample mix = 0;
-
-        fmosc.frequency = osc.frequency * params[1] * 8.0;
-        osc.FM(fmosc.NextSample(), params[0] * 0.1);
-        filter.cutoff = filt.NextSample() * 10000 + 1000;
-        Sample o1 = env.Apply(filter.Apply(osc.NextSample()));
-        
-        
-
-        buffer[i++] = o1 * 0.5;
-    }
+    for (int i = 0; i < Audio::BUFFER_SIZE;)
+        buffer[i++] =
+        filter3.Cutoff(20)
+        .Apply(
+            filter2.Cutoff(16000)
+            .Apply(
+                env.Apply(
+                    filter.Cutoff(
+                        env2.NextSample() * 10000 + 1000
+                    )
+                    .Apply(
+                        osc.FM(
+                            fmosc.Frequency(
+                                osc.Frequency() * params[1] * 8.0
+                            )
+                            .NextSample(),
+                            params[0] * 0.1
+                        )
+                        .NextSample()
+                    )
+                )
+            )
+        );
 }
