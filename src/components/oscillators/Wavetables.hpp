@@ -19,4 +19,9 @@ namespace Wavetables
     {
         double value(double) override;
     };
+
+    struct Triangle : public WaveTable
+    {
+        double value(double) override;
+    };
 }

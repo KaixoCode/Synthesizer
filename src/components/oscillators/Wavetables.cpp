@@ -16,3 +16,8 @@ double Wavetables::Saw::value(double phase)
 {
     return 2 * ((-phase / TWO_PI) + 0.5);
 }
+
+double Wavetables::Triangle::value(double phase)
+{
+    return 2 * std::abs(0.5 + (-phase / TWO_PI));
+}
