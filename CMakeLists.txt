@@ -16,12 +16,19 @@ file(GLOB SOURCE
 
  "src/utils/gui/guilib.hpp"
  
+ "src/components/effects/Delay.hpp"
+ "src/components/effects/Delay.cpp"
+
  "src/components/envelopes/Envelope.hpp"
  "src/components/envelopes/ADSR.hpp"
  "src/components/envelopes/ADSR.cpp"
 
  "src/components/filters/Filter.hpp"
  "src/components/filters/Filter.cpp"
+ "src/components/filters/LPF.hpp"
+ "src/components/filters/LPF.cpp"
+ "src/components/filters/HPF.hpp"
+ "src/components/filters/HPF.cpp"
 
  "src/components/oscillators/Oscillator.hpp"
  "src/components/oscillators/Oscillator.cpp"
