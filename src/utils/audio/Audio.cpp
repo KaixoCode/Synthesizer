@@ -1,6 +1,6 @@
 
 #include "Audio.hpp"
-#include <thread>
+#include "../Utils.hpp"
 
 
 
@@ -15,9 +15,6 @@ namespace Audio {
 
 	// Playback info
 	const char* device = "default";            /* playback device */
-	const unsigned int SAMPLE_RATE = 48000;
-	const unsigned int BUFFER_SIZE = 512;
-	const unsigned int CHANNELS = 1;
 
 	// Buffers
 	static float buffer[2][BUFFER_SIZE];
@@ -109,11 +106,6 @@ namespace Audio {
 
 namespace Audio {
 
-	// Playback info
-	const unsigned int SAMPLE_RATE = 44100 * 8;
-	const unsigned int BUFFER_SIZE = 512;
-	const unsigned int CHANNELS = 1;
-
 	static int playCallback(const void*, void*, unsigned long, const PaStreamCallbackTimeInfo*, PaStreamCallbackFlags, void*);
 
 	// Buffers
@@ -140,7 +132,7 @@ namespace Audio {
 		outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
 		outputParameters.suggestedLatency = 0.050; // Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
 		outputParameters.hostApiSpecificStreamInfo = NULL;
-		err = Pa_OpenStream(&stream, NULL, &outputParameters, SAMPLE_RATE, BUFFER_SIZE, paClipOff, playCallback, 0);
+		err = Pa_OpenStream(&stream, NULL, &outputParameters, (double) SAMPLE_RATE, BUFFER_SIZE, paClipOff, playCallback, 0);
 		if (err != paNoError) return -1;
 
 		// Start
