@@ -1,0 +1,73 @@
+cmake_minimum_required (VERSION 3.0)
+project (Synthesizer)
+
+add_subdirectory (libs)
+
+file(GLOB SOURCE
+ "src/main.cpp"
+
+ "src/utils/Constants.hpp"
+
+ "src/utils/audio/Audio.hpp"
+ "src/utils/audio/Audio.cpp"
+
+ "src/utils/midi/Midi.hpp"
+ "src/utils/midi/Midi.cpp"
+
+ "src/utils/gui/guilib.hpp"
+ 
+ "src/components/envelopes/Envelope.hpp"
+ "src/components/envelopes/ADSR.hpp"
+ "src/components/envelopes/ADSR.cpp"
+
+ "src/components/filters/Filter.hpp"
+ "src/components/filters/Filter.cpp"
+
+ "src/components/oscillators/Oscillator.hpp"
+ "src/components/oscillators/Oscillator.cpp"
+ "src/components/oscillators/Wavetables.hpp"
+ "src/components/oscillators/Wavetables.cpp"
+)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+
+
+	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+	set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+if (UNIX)
+	find_package(ALSA REQUIRED)
+	
+	include_directories(
+		libs/rtmidi-4.0.0/
+	)
+
+	add_executable(Synthesizer
+		${SOURCE}
+	)
+
+	target_link_libraries(Synthesizer
+		${ALSA_LIBRARY}
+		rtmidi
+	)
+endif (UNIX)
+
+
+if (WIN32)
+
+
+	include_directories(
+		libs/rtmidi-4.0.0/
+		libs/portaudio/include/
+	)
+
+	add_executable(Synthesizer WIN32
+		${SOURCE}
+	)
+	
+	target_link_libraries(Synthesizer
+		portaudio
+		rtmidi
+		dwrite
+	)
+endif (WIN32)
