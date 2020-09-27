@@ -1,5 +1,5 @@
 #include "Wavetables.hpp"
-#include "../../utils/Constants.hpp"
+#include "../../utils/Utils.hpp"
 #include <cmath>
 
 double Wavetables::Square::value(double phase)
