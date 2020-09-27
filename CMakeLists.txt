@@ -55,14 +55,13 @@ endif (UNIX)
 
 if (WIN32)
 
-
-	include_directories(
-		libs/rtmidi-4.0.0/
-		libs/portaudio/include/
-	)
-
 	add_executable(Synthesizer WIN32
 		${SOURCE}
+	)
+
+	target_include_directories(Synthesizer PUBLIC
+		libs/rtmidi-4.0.0/
+		libs/portaudio/include/
 	)
 	
 	target_link_libraries(Synthesizer
