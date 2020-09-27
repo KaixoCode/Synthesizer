@@ -5,6 +5,8 @@
 #include "components/filters/LPF.hpp"
 #include "components/filters/HPF.hpp"
 #include "components/oscillators/Oscillator.hpp"
+#include "components/effects/Delay.hpp"
+
 
 void AudioCallback(float *buffer);
 
@@ -14,6 +16,7 @@ ADSR env2{ 0, 0.3, 0, 0 };
 Oscillator fmosc;
 LPF lpf;
 LPF lpf2;
+Delay delay;
 
 double params[10];
 bool pressed = false;
@@ -107,9 +110,10 @@ int main(void) {
 
 void AudioCallback(float* buffer)
 {
-    for (int i = 0; i < BUFFER_SIZE;) buffer[i++] =
+    for (int i = 0; i < BUFFER_SIZE;) buffer[i++] = 0.5 * (
         lpf2.Cutoff(20000) >> ( // Filter everything above 20kHz away
-            env >> ( // Apply the envelope
-                lpf.Cutoff(++env2 * 10000 + 1000) >> (// Lowpass filter whose cutoff is modulated by env2.
-                    ++osc.FM(++fmosc.Frequency(osc.Frequency() * params[1] * 8.0), params[0] * 0.1)))); // Osc is FMed by fmosc
+            delay.Time(0.5).Feedback(0.4) >> (
+                env >> ( // Apply the envelope
+                    lpf.Cutoff(++env2 * 10000 + 1000) >> (// Lowpass filter whose cutoff is modulated by env2.
+                        ++osc.FM(++fmosc.Frequency(osc.Frequency() * params[1] * 8.0), params[0] * 0.1)))))); // Osc is FMed by fmosc
 }
