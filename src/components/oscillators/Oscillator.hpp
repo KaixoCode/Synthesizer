@@ -18,7 +18,6 @@ public:
     Oscillator& Frequency(double f);
     double Frequency();
 
-
     Wavetables::WaveTable* waveTable = new Wavetables::Sine;
 
     Oscillator() {};
