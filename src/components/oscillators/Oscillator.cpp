@@ -1,16 +1,17 @@
 #include "Oscillator.hpp"
-#include "../../utils/Constants.hpp"
+#include "../../utils/Utils.hpp"
 #include <cmath>
 
-double Oscillator::NextSample() 
+Sample Oscillator::NextSample()
 {
     phase = std::fmod(phase + fm + (frequency) * TWO_PI / Audio::SAMPLE_RATE, TWO_PI);
+    sample = waveTable->value(phase) * am;
     fm = 0;
-    sample = waveTable->value(phase);
+    am = 1;
     return sample;
 }
 
-double Oscillator::Sample()
+Sample Oscillator::GetSample()
 {
     return sample;
 }
@@ -20,12 +21,12 @@ void Oscillator::ResetPhase()
     phase = 0;
 }
 
-void Oscillator::FM(Oscillator& fm, double amt) 
+void Oscillator::FM(Sample fm, double amt) 
 {
-    this->fm = fm.Sample() * amt;
+    this->fm = fm * amt;
 }
 
-void Oscillator::AM(Oscillator& am)
+void Oscillator::AM(Sample am)
 {
-    this->am = am.Sample();
+    this->am = am;
 }

@@ -1,6 +1,7 @@
 #pragma once
+#include "../utils/Utils.hpp"
 struct Component 
 {
-	virtual double NextSample() = 0;
-	virtual double Sample() = 0;
+	virtual Sample NextSample() = 0;
+	virtual Sample GetSample() = 0;
 };

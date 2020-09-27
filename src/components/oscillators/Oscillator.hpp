@@ -7,7 +7,7 @@ class Oscillator : public Component
 {
 private:
     double phase = 0;
-    double sample = 0;
+    Sample sample = 0;
 
     double fm = 0;
     double am = 1;
@@ -21,12 +21,12 @@ public:
 
     ~Oscillator() { delete waveTable; };
 
-    double NextSample() override;
-    double Sample() override;
+    Sample NextSample() override;
+    Sample GetSample() override;
 
     void ResetPhase();
 
-    void FM(Oscillator&, double); // Frequency modulate
-    void AM(Oscillator&); // Amplitude modulate
+    void FM(Sample, double); // Frequency modulate
+    void AM(Sample); // Amplitude modulate
 };
 

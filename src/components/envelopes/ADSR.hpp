@@ -2,7 +2,7 @@
 
 class ADSR : public Envelope
 {
-    double sample = 0;
+    Sample sample = 0;
     double phase = -1;
     bool gate = false;
 
@@ -16,8 +16,10 @@ public:
     double DC = 1.0; // curve
     double RC = 1.0; // curve
 
-    double NextSample() override;
-    double Sample() override;
+    Sample NextSample() override;
+    Sample GetSample() override;
+
+    Sample Apply(Sample) override;
     
     void Trigger() override;
     void Gate(bool) override;

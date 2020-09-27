@@ -5,7 +5,7 @@
 
 
 
-double ADSR::NextSample() 
+Sample ADSR::NextSample()
 {
     if (phase >= 0 && (phase < A + D || !gate)) phase += 1.0/Audio::SAMPLE_RATE;
     else if (gate)
@@ -14,7 +14,7 @@ double ADSR::NextSample()
     return sample;
 }
 
-double ADSR::Sample() 
+Sample ADSR::GetSample()
 {
     return sample;
 }
@@ -27,4 +27,9 @@ void ADSR::Trigger()
 void ADSR::Gate(bool g) 
 {
     gate = g;
+}
+
+Sample ADSR::Apply(Sample s) 
+{
+    return s * NextSample();
 }
