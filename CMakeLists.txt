@@ -18,6 +18,12 @@ file(GLOB SOURCE
  
  "src/components/effects/Delay.hpp"
  "src/components/effects/Delay.cpp"
+ "src/components/effects/Flanger.hpp"
+ "src/components/effects/Flanger.cpp"
+ "src/components/effects/Phaser.hpp"
+ "src/components/effects/Phaser.cpp"
+ "src/components/effects/Chorus.hpp"
+ "src/components/effects/Chorus.cpp"
 
  "src/components/envelopes/Envelope.hpp"
  "src/components/envelopes/ADSR.hpp"
