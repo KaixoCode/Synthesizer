@@ -1,26 +1,24 @@
+#include "utils/Utils.hpp"
 #include "utils/audio/Audio.hpp"
-#include <iostream>
-#include <math.h>
-#include <chrono>
-#include <thread>
-#include <vector>
-#include "components/oscillators/Oscillator.hpp"
 #include "utils/midi/Midi.hpp"
 #include "components/envelopes/ADSR.hpp"
+#include "components/filters/Filter.hpp"
+#include "components/oscillators/Oscillator.hpp"
 
 void AudioCallback(float *buffer);
 
 Oscillator osc;
 ADSR env;
 Oscillator fmosc;
+Filter filter;
 
 double params[10];
 bool pressed = false;
 
 #ifdef WIN32
 #include "utils/gui/guilib.hpp"
-class Synth : Window {
-
+class Synth : Window 
+{
     Knob knob1;
     Knob knob2;
     Sensor sensor1;
@@ -103,17 +101,14 @@ int main(void) {
 void AudioCallback(float *buffer)
 {
     for (int i = 0; i < Audio::BUFFER_SIZE;) {
-        double mix = 0;
+        Sample mix = 0;
 
         fmosc.frequency = osc.frequency * params[1] * 8.0;
-        fmosc.NextSample();
-        osc.FM(fmosc, params[0] * 0.1);
-        double o1 = osc.NextSample();
-        double e1 = env.NextSample();
-        mix += o1 * e1;
+        //osc.FM(fmosc.NextSample(), params[0] * 0.1);
+        Sample o1 = env.Apply(filter.Apply(osc.NextSample()));
         
         
 
-        buffer[i++] = mix * 0.4;
+        buffer[i++] = o1;
     }
 }
