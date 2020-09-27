@@ -389,6 +389,7 @@ private:
 
 				if (newhov != hovering)
 				{
+					if (hovering) hovering->hovering = false;
 					MouseEvent en{ MouseEvent::NONE, MouseEvent::EXITED, e.x, e.y };
 					if (hovering) hovering->MouseExited(en);
 					MouseEvent ex{ MouseEvent::NONE, MouseEvent::ENTERED, e.x, e.y };
@@ -424,6 +425,7 @@ private:
 
 		if (hovering)
 		{
+			hovering->hovering = true;
 			if (hovering->cursor == 0) ShowCursor(false);
 			else ShowCursor(true);
 			SetCursor(LoadCursor(NULL, hovering->cursor));
@@ -578,7 +580,7 @@ struct Knob : Drawable
 		float xp = std::cos(angle) * r;
 		canvas.DrawLine({ x, y},{ x + xp, y + yp }, color, 10);
 
-		float s = 0.6;
+		float s = hovering ? 0.55 : 0.6;
 		canvas.CreateSolidColorBrush({ 0.95, 0.95, 0.95, 1 }, &color);
 		canvas.FillEllipse({ x, y, w * s, h * s }, color);
 		canvas.CreateSolidColorBrush({ 0.70, 0.70, 0.70, 1 }, &color);
