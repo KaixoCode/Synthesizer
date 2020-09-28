@@ -23,7 +23,7 @@ Sample Delay::GetSample()
 
 Delay& Delay::Time(double a)
 {
-	offset = std::max(std::min(a * SAMPLE_RATE, (double) Delay::MAX_SIZE), 1.0);
+	offset = std::max(std::min(a * (double)SAMPLE_RATE, (double) MAX_SIZE), 1.0);
 	return *this;
 }
 
