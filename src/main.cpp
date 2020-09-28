@@ -1,4 +1,5 @@
 #include "utils/Utils.hpp"
+#include "utils/gpio/gpio.hpp"
 #include "utils/audio/Audio.hpp"
 #include "utils/midi/Midi.hpp"
 #include "components/envelopes/ADSR.hpp"
@@ -11,6 +12,8 @@
 #include "components/effects/Phaser.hpp"
 #include "components/effects/Reverb.hpp"
 
+
+GPIO gpio;
 
 
 void AudioCallback(float *buffer);
@@ -37,79 +40,6 @@ Oscillator kick;
 ADSR kenv1{ 0, 0.09, 0, 0 };
 ADSR kenv2{ 0, 0.2, 0, 0 };
 
-
-
-double params[10];
-bool pressed = false;
-
-#ifdef WIN32
-#include "utils/gui/guilib.hpp"
-class Synth : Window 
-{
-    Knob knob1;
-    Knob knob2;
-    Knob knob3;
-    Sensor sensor1;
-
-
-    Sensor sensor2;
-
-    bool trig = false, trig2 = false;
-
-    void Draw() {
-        if (pressed)
-            Background({ 0.3, 0, 0 });
-        else
-            Background({ 0, 0, 0 });
-        Window::Draw(knob1, 500, 500);
-        Window::Draw(knob2, 400, 200);
-        Window::Draw(knob3, 800, 300);
-
-        Window::Draw(sensor1, 600, 300);
-
-
-        Window::Draw(sensor2, 1000, 300);
-
-        params[0] = knob1.val;
-        params[1] = knob2.val;
-        params[2] = knob3.val;
-
-        if (sensor1.val != 1) 
-        {
-            osc.Frequency(Midi::NoteToFreq(Midi::NoteToScale(sensor1.val * 36 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7)));
-            if (!trig) {
-                osc.ResetPhase();
-                fmosc.ResetPhase();
-                env.Trigger();
-                env.Gate(true);
-                env2.Trigger();
-                env2.Gate(true);
-                trig = true;
-            }
-        }
-        else
-        {
-            if (trig) env.Gate(false);
-            trig = false;
-        }
-
-        if (sensor2.val != 1) {
-            if (!trig2) {
-                kenv1.Trigger();
-                kenv2.Trigger();
-                kick.ResetPhase();
-                trig2 = true;
-            }
-        }
-        else
-        {
-            trig2 = false;
-        }
-
-    };
-};
-#endif
-
 int a = 0;
 void MidiPress(int note, int velocity) {
     a++;
@@ -128,10 +58,9 @@ void MidiRelease(int note, int velocity) {
     if (a == 0)env2.Gate(false);
 }
 
+
 int main(void) {
-#ifdef WIN32
-    Synth gui;
-#endif
+
 
 
 
@@ -161,25 +90,39 @@ int main(void) {
     return 0;
 }
 
+bool trig = false;
 void AudioCallback(float* buffer)
 {
+    if (gpio[31] != 88) 
+    { 
+        int note = Midi::NoteToScale(gpio[31], new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7);
+        if (!trig) MidiPress(note, 1);
+        osc.Frequency(Midi::NoteToFreq(note));
+        trig = true;
+    }
+    else
+    {
+        if (trig) MidiRelease(0, 1);
+        trig = false;
+    }
+
     for (int i = 0; i < CHANNELS * BUFFER_SIZE;)
     {
         // Mono pre-effect channel
-        Sample pre = flanger.Feedback(0.3).Mix(0.5).Intensity(2).Frequency(0.25) >> ( // Flanger effect
+        Sample pre = (
             lpf2.Cutoff(20000) >> ( // Filter everything above 20kHz away
-                env >> ( // Apply the envelope
-                    lpf.Cutoff(++env2 * 20000 + 1000) >> (// Lowpass filter whose cutoff is modulated by env2.
-                        ++osc.FM(++fmosc.Frequency(osc.Frequency() * params[1] * 8.0), params[0] * 0.1))))); // Osc is FMed by fmosc
+                env.Attack(gpio[16]).Decay(gpio[17]).Sustain(gpio[18]).Release(gpio[19]) >> ( // Apply the envelope
+                    lpf.Cutoff(++env2.Attack(gpio[20]).Decay(gpio[21]).Sustain(gpio[22]).Release(gpio[23]) * 20000 + 1000) >> (// Lowpass filter whose cutoff is modulated by env2.
+                        ++osc.FM(++fmosc.Frequency(osc.Frequency() * gpio[1]), gpio[0]))))); // Osc is FMed by fmosc
 
         // Left stereo channel
         Sample post1 = 0.5 * (
-            delay1.Mix(params[2]).Time(0.300).Feedback(0.4) >> ( // Delay effect
+            delay1.Mix(gpio[2]).Time(0.300).Feedback(0.4) >> ( // Delay effect
                 chorus1.Intensity(0.5).Frequency(0.20).Feedback(0.1) >> pre)); // Chorus effect
            
         // Right stereo channel
         Sample post2 = 0.5 * (
-            delay2.Mix(params[2]).Time(0.320).Feedback(0.4) >> ( // Delay effect
+            delay2.Mix(gpio[2]).Time(0.320).Feedback(0.4) >> ( // Delay effect
                 chorus2.Intensity(0.5).Frequency(0.30).Feedback(0.1) >> pre)); // Chorus effect
              
         // Limit value between -1 and 1 to prevent clipping.
