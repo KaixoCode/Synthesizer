@@ -17,7 +17,7 @@ namespace Audio {
 	const char* device = "default";            /* playback device */
 
 	// Buffers
-	static float buffer[2][BUFFER_SIZE];
+	static float buffer[2][CHANNELS * BUFFER_SIZE];
 
 	// Callback method
 	void (*Callback)(float*);
