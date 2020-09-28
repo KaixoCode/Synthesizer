@@ -24,6 +24,8 @@ file(GLOB SOURCE
  "src/components/effects/Phaser.cpp"
  "src/components/effects/Chorus.hpp"
  "src/components/effects/Chorus.cpp"
+ "src/components/effects/Reverb.hpp"
+ "src/components/effects/Reverb.cpp"
 
  "src/components/envelopes/Envelope.hpp"
  "src/components/envelopes/ADSR.hpp"
