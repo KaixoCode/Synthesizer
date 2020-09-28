@@ -6,7 +6,6 @@ class ADSR : public Envelope
     double phase = -1;
     bool gate = false;
 
-public:
     double A = 0.02; // s
     double D = 0.1; // s
     double S = 1.0; // (0-1)
@@ -16,7 +15,15 @@ public:
     double DC = 0.5;
     double RC = 0.5;
 
+public:
+
+
     ADSR(double a, double d, double s, double r) : A(a), D(d), S(s), R(r) {};
+
+    ADSR& Attack(double);
+    ADSR& Decay(double);
+    ADSR& Sustain(double);
+    ADSR& Release(double);
 
     Sample NextSample() override;
     Sample GetSample() override;

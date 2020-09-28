@@ -26,10 +26,35 @@ void ADSR::Trigger()
 
 void ADSR::Gate(bool g) 
 {
+    if (gate && !g) phase = A + D;
     gate = g;
 }
 
 Sample ADSR::Apply(Sample s) 
 {
     return s * NextSample();
+}
+
+ADSR& ADSR::Attack(double v) 
+{
+    A = v;
+    return *this;
+}
+
+ADSR& ADSR::Decay(double v)
+{
+    D = v;
+    return *this;
+}
+
+ADSR& ADSR::Sustain(double v)
+{
+    S = v;
+    return *this;
+}
+
+ADSR& ADSR::Release(double v)
+{
+    R = v;
+    return *this;
 }
