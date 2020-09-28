@@ -9,6 +9,8 @@
 #include "components/effects/Flanger.hpp"
 #include "components/effects/Chorus.hpp"
 #include "components/effects/Phaser.hpp"
+#include "components/effects/Reverb.hpp"
+
 
 
 void AudioCallback(float *buffer);
@@ -16,7 +18,7 @@ void AudioCallback(float *buffer);
 Oscillator lfo;
 Oscillator osc;
 ADSR env{ 0, 0.6, 1, 0.3 };
-ADSR env2{ 0, 0.3, 0.5, 0.3 };
+ADSR env2{ 0, 0.3, 0.2, 0.3 };
 Oscillator fmosc;
 LPF lpf;
 LPF lpf2;
@@ -27,6 +29,14 @@ Chorus chorus1;
 Chorus chorus2;
 Phaser phaser1;
 Phaser phaser2;
+Reverb reverb1;
+Reverb reverb2;
+
+
+Oscillator kick;
+ADSR kenv1{ 0, 0.09, 0, 0 };
+ADSR kenv2{ 0, 0.2, 0, 0 };
+
 
 
 double params[10];
@@ -41,7 +51,10 @@ class Synth : Window
     Knob knob3;
     Sensor sensor1;
 
-    bool trig = false;
+
+    Sensor sensor2;
+
+    bool trig = false, trig2 = false;
 
     void Draw() {
         if (pressed)
@@ -53,6 +66,9 @@ class Synth : Window
         Window::Draw(knob3, 800, 300);
 
         Window::Draw(sensor1, 600, 300);
+
+
+        Window::Draw(sensor2, 1000, 300);
 
         params[0] = knob1.val;
         params[1] = knob2.val;
@@ -75,6 +91,19 @@ class Synth : Window
         {
             if (trig) env.Gate(false);
             trig = false;
+        }
+
+        if (sensor2.val != 1) {
+            if (!trig2) {
+                kenv1.Trigger();
+                kenv2.Trigger();
+                kick.ResetPhase();
+                trig2 = true;
+            }
+        }
+        else
+        {
+            trig2 = false;
         }
 
     };
@@ -110,10 +139,15 @@ int main(void) {
     midi.MidiPress = MidiPress;
     midi.MidiRelease = MidiRelease;
     
+    reverb1.Offset(0.0032);
+    reverb2.Offset(0.0038);
 
     osc.waveTable = new Wavetables::Saw;
     lfo.waveTable = new Wavetables::Triangle;
     fmosc.waveTable = new Wavetables::Sine;
+
+    kick.waveTable = new Wavetables::Sine;
+    kick.Frequency(60);
 
     Audio::Start();    
     Audio::SetCallback(AudioCallback);
@@ -132,25 +166,24 @@ void AudioCallback(float* buffer)
     for (int i = 0; i < CHANNELS * BUFFER_SIZE;)
     {
         // Mono pre-effect channel
-        Sample pre =
+        Sample pre = flanger.Feedback(0.3).Mix(0.5).Intensity(2).Frequency(0.25) >> ( // Flanger effect
             lpf2.Cutoff(20000) >> ( // Filter everything above 20kHz away
                 env >> ( // Apply the envelope
-                    lpf.Cutoff(++env2 * 10000 + 1000) >> (// Lowpass filter whose cutoff is modulated by env2.
-                        ++osc.FM(++fmosc.Frequency(osc.Frequency() * params[1] * 8.0), params[0] * 0.1)))); // Osc is FMed by fmosc
+                    lpf.Cutoff(++env2 * 20000 + 1000) >> (// Lowpass filter whose cutoff is modulated by env2.
+                        ++osc.FM(++fmosc.Frequency(osc.Frequency() * params[1] * 8.0), params[0] * 0.1))))); // Osc is FMed by fmosc
 
         // Left stereo channel
-        Sample post1 =
-            delay1.Mix(0.5).Time(0.300).Feedback(0.4) >> ( // Delay effect
-                chorus1.Intensity(0.5).Frequency(0.20).Feedback(0.1) >> pre); // Chorus effect
-                //phaser1.Intensity(0.5).Delay(params[2] * 0.10).Feedback(0) >> pre); // Chorus effect
-
-        // Right channel
-        Sample post2 =
-            delay2.Mix(0.5).Time(0.320).Feedback(0.4) >> ( // Delay effect
-                chorus2.Intensity(0.5).Frequency(0.30).Feedback(0.1) >> pre); // Chorus effect
-                //phaser2.Intensity(0.5).Delay(0.01).Feedback(0.1) >> pre); // Chorus effect
-
-        buffer[i++] = post1 * 0.5;
-        buffer[i++] = post2 * 0.5;
+        Sample post1 = 0.5 * (
+            delay1.Mix(params[2]).Time(0.300).Feedback(0.4) >> ( // Delay effect
+                chorus1.Intensity(0.5).Frequency(0.20).Feedback(0.1) >> pre)); // Chorus effect
+           
+        // Right stereo channel
+        Sample post2 = 0.5 * (
+            delay2.Mix(params[2]).Time(0.320).Feedback(0.4) >> ( // Delay effect
+                chorus2.Intensity(0.5).Frequency(0.30).Feedback(0.1) >> pre)); // Chorus effect
+             
+        // Limit value between -1 and 1 to prevent clipping.
+        buffer[i++] = post1 > 1 ? 1 : post1 < -1 ? -1 : post1;
+        buffer[i++] = post2 > 1 ? 1 : post2 < -1 ? -1 : post2;
     }
 }
