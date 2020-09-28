@@ -8,6 +8,9 @@ file(GLOB SOURCE
 
  "src/utils/Utils.hpp"
 
+ "src/utils/gpio/gpio.hpp"
+ "src/utils/gpio/gpio.cpp"
+
  "src/utils/audio/Audio.hpp"
  "src/utils/audio/Audio.cpp"
 
