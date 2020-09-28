@@ -5,7 +5,7 @@
 
 Sample LPF::NextSample()
 {	
-	double Q = cutoff / 100.0;
+	double Q = 1;
 	double w0 = TWO_PI * (cutoff / (double) SAMPLE_RATE);
 	double cos = std::cos(w0);
 	double a = (std::sin(w0)) / (2.0 * Q);
