@@ -18,7 +18,11 @@ file(GLOB SOURCE
  "src/utils/midi/Midi.cpp"
 
  "src/utils/gui/guilib.hpp"
- 
+
+ "src/components/Effect.hpp"
+ "src/components/Effect.cpp"
+ "src/components/Generator.hpp" 
+
  "src/components/effects/Delay.hpp"
  "src/components/effects/Delay.cpp"
  "src/components/effects/Flanger.hpp"
@@ -31,6 +35,7 @@ file(GLOB SOURCE
  "src/components/effects/Reverb.cpp"
 
  "src/components/envelopes/Envelope.hpp"
+ "src/components/envelopes/Envelope.cpp"
  "src/components/envelopes/ADSR.hpp"
  "src/components/envelopes/ADSR.cpp"
 
@@ -41,10 +46,10 @@ file(GLOB SOURCE
  "src/components/filters/HPF.hpp"
  "src/components/filters/HPF.cpp"
 
- "src/components/oscillators/Oscillator.hpp"
- "src/components/oscillators/Oscillator.cpp"
- "src/components/oscillators/Wavetables.hpp"
- "src/components/oscillators/Wavetables.cpp"
+ "src/components/generators/Oscillator.hpp"
+ "src/components/generators/Oscillator.cpp"
+ "src/components/generators/Wavetables.hpp"
+ "src/components/generators/Wavetables.cpp"
 )
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
