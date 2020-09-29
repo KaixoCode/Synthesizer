@@ -4,5 +4,5 @@
 class HPF : public Filter
 {
 public:
-    Sample NextSample() override;
+    Sample Apply(Sample a) override;
 };

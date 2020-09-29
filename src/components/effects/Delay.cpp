@@ -4,21 +4,11 @@
 Sample Delay::Apply(Sample a) 
 {
 	buffer[current] = a;
-	return NextSample() * mix + a * (1 - mix);
-};
-
-Sample Delay::NextSample() 
-{
 	unsigned int index = (current + MAX_SIZE - offset) % MAX_SIZE;
-	now = buffer[index];
+	Sample now = buffer[index];
 	buffer[current] += now * feedback;
 	current = (current + 1) % MAX_SIZE;
-	return now;
-};
-
-Sample Delay::GetSample() 
-{
-	return now;
+	return now * mix + a * (1 - mix);
 };
 
 Delay& Delay::Time(double a)

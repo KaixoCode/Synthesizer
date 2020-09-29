@@ -1,8 +1,8 @@
 #pragma once
-#include "../Component.hpp"
+#include "../Effect.hpp"
 #include "../../utils/Utils.hpp"
 
-class Filter : public Component
+class Filter : public Effect
 {
 protected:
     Sample x[3];
@@ -12,7 +12,4 @@ protected:
 
 public:
     Filter& Cutoff(double);
-    Sample Apply(Sample a);
-    Sample operator>>(Sample a) { return Apply(a); };
-    Sample GetSample() override;
 };

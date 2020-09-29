@@ -4,5 +4,5 @@
 class LPF : public Filter
 {
 public:
-    Sample NextSample() override;
+    Sample Apply(Sample a) override;
 };

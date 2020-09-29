@@ -3,24 +3,11 @@
 
 Sample Phaser::Apply(Sample a)
 {
-	now = a - intensity * (delay
+	return a - intensity * (a >> delay
 		.Mix(1)
 		.Time(d)
-		.Feedback(feedback)
-		>> a);
-	return NextSample();
+		.Feedback(feedback));
 };
-
-Sample Phaser::NextSample()
-{
-	return now;
-};
-
-Sample Phaser::GetSample()
-{
-	return now;
-};
-
 
 Phaser& Phaser::Delay(double a)
 {

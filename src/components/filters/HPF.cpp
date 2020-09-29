@@ -3,8 +3,9 @@
 #include <cmath>
 
 
-Sample HPF::NextSample()
+Sample HPF::Apply(Sample s)
 {	
+	x[0] = s;
 	double Q = 1;
 	double w0 = TWO_PI * (2 * cutoff / (double) SAMPLE_RATE);
 	double cos = std::cos(w0);

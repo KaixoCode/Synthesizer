@@ -1,9 +1,9 @@
 #pragma once
 #include "../../utils/audio/Audio.hpp"
-#include "../Component.hpp"
+#include "../Generator.hpp"
 #include "Wavetables.hpp"
 
-class Oscillator : public Component
+class Oscillator : public Generator
 {
 private:
     double phase = 0;
@@ -29,7 +29,7 @@ public:
 
     void ResetPhase();
 
-    Oscillator& FM(Sample, double); // Frequency modulate
+    Oscillator& FM(Sample); // Frequency modulate
     Oscillator& AM(Sample); // Amplitude modulate
 };
 

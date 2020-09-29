@@ -8,24 +8,11 @@ Chorus::Chorus()
 
 Sample Chorus::Apply(Sample a)
 {
-	now = delay
+	return a >> delay
 		.Mix(mix)
 		.Time(++lfo * (intensity * 0.02) + (intensity * 0.08))
-		.Feedback(feedback)
-		>> a;
-	return NextSample();
+		.Feedback(feedback);
 };
-
-Sample Chorus::NextSample()
-{
-	return now;
-};
-
-Sample Chorus::GetSample()
-{
-	return now;
-};
-
 
 Chorus& Chorus::Frequency(double a)
 {

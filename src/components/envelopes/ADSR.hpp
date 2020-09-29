@@ -2,7 +2,7 @@
 
 class ADSR : public Envelope
 {
-    Sample sample = 0;
+    Sample sample;
     double phase = -1;
     bool gate = false;
 
@@ -25,10 +25,10 @@ public:
     ADSR& Sustain(double);
     ADSR& Release(double);
 
+    Sample Apply(Sample) override;
+
     Sample NextSample() override;
     Sample GetSample() override;
-
-    Sample Apply(Sample) override;
     
     void Trigger() override;
     void Gate(bool) override;
