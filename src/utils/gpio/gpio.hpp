@@ -1,11 +1,11 @@
 #pragma once
 
 #define PIN_AMOUNT 32
+#include <array>
 
 #ifdef WIN32
 
 #include "../gui/guilib.hpp"
-#include <array>
 class Synth : Window
 {
     Knob knob1;
@@ -39,18 +39,18 @@ class Synth : Window
 
 public:
     Synth(std::array<double, PIN_AMOUNT> &params) :
-        knob1(params[0], 0, 0.1), 
-        knob2(params[1], 0, 8),
-        knob3(params[2], 0, 1),
-        s1(params[16], 0, 1, 0),
-        s2(params[17], 0, 1, 0.6),
-        s3(params[18], 0, 1, 1),
-        s4(params[19], 0, 1, 0.2),
-        s5(params[20], 0, 1, 0),
-        s6(params[21], 0, 1, 0.6),
-        s7(params[22], 0, 1, 0.2),
-        s8(params[23], 0, 1, 0.2),
-        sensor1(params[31], 24, 88)
+        knob1(params[0], 0), 
+        knob2(params[1], 0),
+        knob3(params[2], 0),
+        s1(params[16], 0.0),
+        s2(params[17], 0.6),
+        s3(params[18], 1.0),
+        s4(params[19], 0.4),
+        s5(params[20], 0.0),
+        s6(params[21], 0.6),
+        s7(params[22], 1.0),
+        s8(params[23], 0.4),
+        sensor1(params[31])
     {
     }
 };
