@@ -559,29 +559,19 @@ struct Knob : Drawable
 	double val = 0, aval = 0;
 	float xo = 0, yo = 0;
 	double& link;
-	double rstart = 0, rend = 1;
 	
 	Knob(double& link) : Drawable(), color(0), link(link)
 	{
+		link = val;
 	}
 
-	Knob(double& link, double rstart, double rend) : 
-		Drawable(), 
-		color(0), 
-		link(link),
-		rstart(rstart),
-		rend(rend)
-	{
-	}
-
-	Knob(double& link, double rstart, double rend, double val) :
+	Knob(double& link, double val) :
 		Drawable(),
 		color(0),
 		link(link),
-		rstart(rstart),
-		rend(rend),
-		val(val)
+		aval(val)
 	{
+		link = val;
 	}
 
 	SolidBrush* color;
@@ -602,7 +592,7 @@ struct Knob : Drawable
 		canvas.FillEllipse({ x, y, w * s, h * s }, color);
 		
 		val = val * 0.8 + aval * 0.2;
-		link = val * (rend - rstart) + rstart;
+		link = val;
 	}
 
 	bool WithinBounds(int x, int y)
@@ -642,32 +632,19 @@ struct Slider : Drawable
 	double val = 1, aval = 1;
 	float xo = 0, yo = 0;
 	double& link;
-	double rstart = 0, rend = 1;
 
 	Slider(double& link) : Drawable(), color(0), link(link)
 	{
-		link = rend;
+		link = val;
 	}
 
-	Slider(double& link, double rstart, double rend) :
+	Slider(double& link, double val) :
 		Drawable(),
 		color(0),
 		link(link),
-		rstart(rstart),
-		rend(rend)
-	{
-		link = rend;
-	}
-
-	Slider(double& link, double rstart, double rend, double val) :
-		Drawable(),
-		color(0),
-		link(link),
-		rstart(rstart),
-		rend(rend),
 		aval(val)
 	{
-		link = rend;
+		link = val;
 	}
 
 	SolidBrush* color;
@@ -685,7 +662,7 @@ struct Slider : Drawable
 		else canvas.FillRectangle({ x, y + h - (float)val * (h - 20), x + w, y - 20 + h - (float)val * (h - 20) }, color);
 		
 		val = val * 0.8 + aval * 0.2;
-		link = val * (rend - rstart) + rstart;
+		link = val;
 	}
 
 	bool WithinBounds(int x, int y)
@@ -712,21 +689,10 @@ struct Sensor : Drawable
 	double val = 1;
 	float xo = 0, yo = 0;
 	double& link;
-	double rstart = 0, rend = 1;
 
 	Sensor(double& link) : Drawable(), color(0), link(link)
 	{
-		link = rend;
-	}
-
-	Sensor(double& link, double rstart, double rend) :
-		Drawable(),
-		color(0),
-		link(link),
-		rstart(rstart),
-		rend(rend)
-	{
-		link = rend;
+		link = 1;
 	}
 
 	SolidBrush* color;
@@ -754,13 +720,13 @@ struct Sensor : Drawable
 	void MouseMoved(MouseEvent& e) 
 	{
 		val = std::fmax(std::fmin(1 - (e.y - y)/h, 1), 0);
-		link = val * (rend - rstart) + rstart;
+		link = val;
 	}
 
 	void MouseExited(MouseEvent& e)
 	{
 		val = 1;
-		link = val * (rend - rstart) + rstart;
+		link = val;
 	}
 };
 #endif
