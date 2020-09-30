@@ -2,7 +2,8 @@
 
 class ADSR : public Envelope
 {
-    Sample sample;
+    Sample sample = 0;
+    Sample down = 0;
     double phase = -1;
     bool gate = false;
 
