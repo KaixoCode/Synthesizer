@@ -10,7 +10,7 @@ Sample Flanger::Apply(Sample a)
 {
 	return a >> delay
 		.Mix(mix)
-		.Time(++lfo * (intensity * 0.001) + (intensity * 0.001))
+		.Time(lfo * (intensity * 0.001) + (intensity * 0.001))
 		.Feedback(feedback);
 };
 

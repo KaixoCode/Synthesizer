@@ -7,6 +7,8 @@ class Oscillator : public Generator
 {
 private:
     double phase = 0;
+    double sync = 1;
+    double syncCounter = 0;
     Sample sample = 0;
 
     double fm = 0;
@@ -27,9 +29,12 @@ public:
     Sample NextSample() override;
     Sample GetSample() override;
 
+    double Phase();
     void ResetPhase();
 
     Oscillator& FM(Sample); // Frequency modulate
     Oscillator& AM(Sample); // Amplitude modulate
+
+    Oscillator& Sync(double); // Amplitude modulate
 };
 

@@ -10,7 +10,7 @@ Sample Chorus::Apply(Sample a)
 {
 	return a >> delay
 		.Mix(mix)
-		.Time(++lfo * (intensity * 0.02) + (intensity * 0.08))
+		.Time(lfo * (intensity * 0.02) + (intensity * 0.08))
 		.Feedback(feedback);
 };
 

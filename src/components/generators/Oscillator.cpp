@@ -4,7 +4,13 @@
 
 Sample Oscillator::NextSample()
 {
-    phase = std::fmod(TWO_PI + phase + (frequency + fm) * TWO_PI / (double) SAMPLE_RATE, TWO_PI);
+    double delta = (sync * frequency + fm) * TWO_PI / (double)SAMPLE_RATE;
+    syncCounter += delta / TWO_PI;
+    phase = std::fmod(TWO_PI + phase + delta, TWO_PI);
+    if (syncCounter > sync) {
+        syncCounter = 0;
+        phase = 0;
+    }
     sample = waveTable->value(phase) * am;
     fm = 0;
     am = 1;
@@ -42,4 +48,15 @@ Oscillator& Oscillator::Frequency(double f)
 double Oscillator::Frequency()
 {
     return frequency;
+}
+
+double Oscillator::Phase() 
+{
+    return phase;
+}
+
+Oscillator& Oscillator::Sync(double o) 
+{
+    sync = o;
+    return *this;
 }
