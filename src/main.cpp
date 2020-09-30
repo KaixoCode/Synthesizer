@@ -98,7 +98,7 @@ void AudioCallback(float* buffer)
     {
         int note = Midi::NoteToScale(gpio[31] * 64 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7);
         if (!trig) MidiPress(note, 1);
-        osc.Frequency(Midi::NoteToFreq(note));
+        osc.Frequency(Midi::NoteToFreq(note ));
         trig = true;
     }
     else
@@ -107,25 +107,26 @@ void AudioCallback(float* buffer)
         trig = false;
     }
 
-    Stereo (*master)() = [](){
-        Stereo mix =
+    Channel master = [](){
+        Stereo mix = 0.5*
             osc                         // Oscillator
             .Sync(env3 * gpio[3] * 10 + 1)
             .FM(gpio[0] * 20000.0 *     // FMed by fmosc
                 fmosc                   // Frequency of fmosc dependent on osc.
-                .Frequency(gpio[1] * 8 * osc.Frequency()))
+                .Frequency(gpio[1] * 8 * osc.Frequency()).GetSample())
+            .AM(gpio[24])
             >> lpf                      // Running through a lowpass filter
             .Cutoff(20000 *             // Cutoff dependend on env2
                 env2
-                .Attack(gpio[20])       // Params modulated by gpio values
-                .Decay(gpio[21])
+                .Attack(std::pow(gpio[20], 2) * 2)       // Params modulated by gpio values
+                .Decay(std::pow(gpio[21], 2) * 2)
                 .Sustain(gpio[22])
-                .Release(gpio[23]))
+                .Release(std::pow(gpio[23], 2) * 2))
             >> env                      // Running through an envelope
-            .Attack(gpio[16])           // Params modulated by gpio values
-            .Decay(gpio[17])
+            .Attack(std::pow(gpio[16], 2) * 2)           // Params modulated by gpio values
+            .Decay(std::pow(gpio[17], 4) * 2)
             .Sustain(gpio[18])
-            .Release(gpio[19])
+            .Release(std::pow(gpio[19], 2) * 2)
             >> lpf2.Cutoff(20000)       // Running through a lowpass filter
             >> StereoEffect{            // Running through stereo chorus
                 chorus1

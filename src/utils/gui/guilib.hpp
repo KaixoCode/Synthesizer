@@ -266,7 +266,7 @@ private:
 			);
 		}
 
-		static const WCHAR msc_fontName[] = L"Verdana";
+		static const WCHAR msc_fontName[] = L"Consolas";
 		static const FLOAT msc_fontSize = 24;
 		if (SUCCEEDED(hr))
 		{
@@ -309,8 +309,8 @@ private:
 				WS_OVERLAPPEDWINDOW,
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
-				1920,
-				1080,
+				1280,
+				760,
 				NULL,
 				NULL,
 				HINST_THISCOMPONENT,
@@ -552,6 +552,12 @@ private:
 	}
 };
 
+
+D2D1_COLOR_F col1{ 0.099, 0.099, 0.099, 1 };
+D2D1_COLOR_F col2{ 0.09, 0.09, 0.09, 1 };
+D2D1_COLOR_F col3{ 0.42, 0.42, 0.42, 1 };
+
+
 struct Knob : Drawable
 {
 
@@ -577,15 +583,15 @@ struct Knob : Drawable
 	SolidBrush* color;
 	void Draw(Canvas& canvas)
 	{
-		if (hovering) canvas.CreateSolidColorBrush({ 0.059, 0.059, 0.059, 1 }, &color);
-		else canvas.CreateSolidColorBrush({ 0.05, 0.05, 0.05, 1 }, &color);
+		if (hovering) canvas.CreateSolidColorBrush(col1, &color);
+		else canvas.CreateSolidColorBrush(col2, &color);
 		canvas.FillEllipse({ x, y, w, h }, color);
 		
 		double angle = val * PI * 1.7 - PI * 1.35;
 		double r = w;
 		float yp = std::sin(angle) * r;
 		float xp = std::cos(angle) * r;
-		canvas.CreateSolidColorBrush({ 0.42, 0.42, 0.42, 1 }, &color);
+		canvas.CreateSolidColorBrush(col3, &color);
 		canvas.DrawLine({ x, y},{ x + xp, y + yp }, color, 10);
 
 		float s = hovering ? 0.52 : 0.55;
@@ -653,11 +659,11 @@ struct Slider : Drawable
 		if (hovering) cursor = IDC_SIZENS;
 		else cursor = IDC_ARROW;
 
-		if (hovering) canvas.CreateSolidColorBrush({ 0.059, 0.059, 0.059, 1 }, &color);
-		else canvas.CreateSolidColorBrush({ 0.05, 0.05, 0.05, 1 }, &color);
+		if (hovering) canvas.CreateSolidColorBrush(col1, &color);
+		else canvas.CreateSolidColorBrush(col2, &color);
 		canvas.FillRectangle({ x, y, x + w, y + h }, color);
 
-		canvas.CreateSolidColorBrush({ 0.42, 0.42, 0.42, 1 }, &color);
+		canvas.CreateSolidColorBrush(col3, &color);
 		if (hovering) canvas.FillRectangle({ x + 1, y + h - (float)val * (h - 20), x + w - 2, y - 18 + h - (float)val * (h - 20) }, color);
 		else canvas.FillRectangle({ x, y + h - (float)val * (h - 20), x + w, y - 20 + h - (float)val * (h - 20) }, color);
 		
@@ -698,11 +704,11 @@ struct Sensor : Drawable
 	SolidBrush* color;
 	void Draw(Canvas& canvas)
 	{
-		canvas.CreateSolidColorBrush({ 0.42, 0.42, 0.42, 1 }, &color);
+		canvas.CreateSolidColorBrush(col3, &color);
 		canvas.FillRectangle({ x, y, x + w, y + h }, color);
 		
-		if (hovering) canvas.CreateSolidColorBrush({ 0.059, 0.059, 0.059, 1 }, &color);
-		else canvas.CreateSolidColorBrush({ 0.05, 0.05, 0.05, 1 }, &color);
+		if (hovering) canvas.CreateSolidColorBrush(col1, &color);
+		else canvas.CreateSolidColorBrush(col2, &color);
 		canvas.FillRectangle({ x, y + h - (float)val*h, x + w, y + h }, color);
 	}
 

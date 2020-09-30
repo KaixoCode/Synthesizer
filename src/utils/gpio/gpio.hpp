@@ -8,43 +8,56 @@
 #include "../gui/guilib.hpp"
 class Synth : Window
 {
-    Knob knob1;
-    Knob knob2;
-    Knob knob3;
-    Knob knob4;
-    Slider s1, s2, s3, s4, s5, s6, s7, s8;
+    Knob k1, k2, k3, k4, k5, k6, k7, k8, k9, k10;
+    Slider s1, s2, s3, s4, s5, s6, s7, s8, s9, s10;
     Sensor sensor1;
  
     void Draw() {
         Background({ 0, 0, 0 });
-        Window::Draw(knob1, 500, 500);
-        Window::Draw(knob2, 400, 200);
-        Window::Draw(knob3, 800, 300);
-        Window::Draw(knob4, 900, 250);
-        int dx = 60, x = 20 - dx, y = height - 320;
+        Fill({ 1, 1, 1, 1 });
+        DrawString(L"O S C   O N E", 13, 200, 30);
+        Window::Draw(s9, 130, 30);
+        Window::Draw(k1, 235, 108);
+        Window::Draw(k2, 340, 198);
+        Window::Draw(k3, 235, 288);
         
-        Fill({1, 1, 1, 1});
-        DrawString(L"Envelope 1", 10, x + dx, y - 38);
+        int mo = 300;
+        DrawString(L"O S C   T W O", 13, 200 + mo, 30);
+        Window::Draw(s10, 130 + mo, 30);
+        Window::Draw(k4, 340 + mo, 108);
+        Window::Draw(k5, 235 + mo, 198);
+        Window::Draw(k6, 340 + mo, 288);
+
+
+        int dx = 70, x = 30 - dx, y = height - 330;
+        
+        Window::Draw(sensor1, x += dx, height - 430);
+        DrawString(L"E N V E L O P E   1", 19, (x += 30) + dx, y - 38);
         Window::Draw(s1, x += dx, y);
         Window::Draw(s2, x += dx, y);
         Window::Draw(s3, x += dx, y);
         Window::Draw(s4, x += dx, y);
 
         x += dx;
-        DrawString(L"Envelope 2", 10, x + dx, y - 38);
+        DrawString(L"E N V E L O P E   2", 19, x + dx, y - 38);
         Window::Draw(s5, x += dx, y);
         Window::Draw(s6, x += dx, y);
         Window::Draw(s7, x += dx, y);
         Window::Draw(s8, x += dx, y);
-        Window::Draw(sensor1, 600, 300);
     };
 
 public:
     Synth(std::array<double, PIN_AMOUNT> &params) :
-        knob1(params[0], 0), 
-        knob2(params[1], 0),
-        knob3(params[2], 0),
-        knob4(params[3], 0),
+        k1(params[0], 0), 
+        k2(params[1], 0),
+        k3(params[2], 0),
+        k4(params[3], 0),
+        k5(params[4], 0),
+        k6(params[5], 0),
+        k7(params[6], 0),
+        k8(params[7], 0),
+        k9(params[7], 0),
+        k10(params[7], 0),
         s1(params[16], 0.0),
         s2(params[17], 0.6),
         s3(params[18], 1.0),
@@ -53,6 +66,8 @@ public:
         s6(params[21], 0.6),
         s7(params[22], 1.0),
         s8(params[23], 0.4),
+        s9(params[24], 0.4),
+        s10(params[25], 0.5),
         sensor1(params[31])
     {
     }
