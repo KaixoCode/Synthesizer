@@ -5,11 +5,15 @@
 
 typedef double Sample;
 
+
 struct Stereo
 {
     Sample left;
     Sample right;
 };
+
+typedef Stereo(*Channel)(void);
+
 
 void FillBuffer(float* buffer, Stereo(*chain)(void));
 
