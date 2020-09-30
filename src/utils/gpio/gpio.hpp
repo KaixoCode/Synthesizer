@@ -11,6 +11,7 @@ class Synth : Window
     Knob knob1;
     Knob knob2;
     Knob knob3;
+    Knob knob4;
     Slider s1, s2, s3, s4, s5, s6, s7, s8;
     Sensor sensor1;
  
@@ -19,6 +20,7 @@ class Synth : Window
         Window::Draw(knob1, 500, 500);
         Window::Draw(knob2, 400, 200);
         Window::Draw(knob3, 800, 300);
+        Window::Draw(knob4, 900, 250);
         int dx = 60, x = 20 - dx, y = height - 320;
         
         Fill({1, 1, 1, 1});
@@ -42,6 +44,7 @@ public:
         knob1(params[0], 0), 
         knob2(params[1], 0),
         knob3(params[2], 0),
+        knob4(params[3], 0),
         s1(params[16], 0.0),
         s2(params[17], 0.6),
         s3(params[18], 1.0),
