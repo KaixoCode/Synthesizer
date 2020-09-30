@@ -1,12 +1,12 @@
 #include "Oscillator.hpp"
-#include "../../utils/Utils.hpp"
+#define _USE_MATH_DEFINES
 #include <cmath>
 
 Sample Oscillator::NextSample()
 {
-    double delta = (sync * frequency + fm) * TWO_PI / (double)SAMPLE_RATE;
-    syncCounter += delta / TWO_PI;
-    phase = std::fmod(TWO_PI + phase + delta, TWO_PI);
+    double delta = (sync * frequency + fm) * (2 * M_PI) / (double)SAMPLE_RATE;
+    syncCounter += delta / (2 * M_PI);
+    phase = std::fmod((2 * M_PI) + phase + delta, (2 * M_PI));
     if (syncCounter > sync) {
         syncCounter = 0;
         phase = 0;

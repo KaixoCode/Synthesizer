@@ -1,6 +1,17 @@
 #include "Effect.hpp"
+#include <array>
 
 Sample operator>>(Sample b, Effect& a)
 {
     return a.Apply(b);
+}
+
+Stereo operator>>(Sample b, StereoEffect& a)
+{
+    return Stereo{ a.left.Apply(b), a.right.Apply(b) };
+}
+
+Stereo operator>>(Stereo& b, StereoEffect& a)
+{
+    return Stereo{ a.left.Apply(b.left), a.right.Apply(b.right) };
 }

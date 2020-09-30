@@ -6,8 +6,6 @@ add_subdirectory (libs)
 file(GLOB SOURCE
  "src/main.cpp"
 
- "src/utils/Utils.hpp"
-
  "src/utils/gpio/gpio.hpp"
  "src/utils/gpio/gpio.cpp"
 

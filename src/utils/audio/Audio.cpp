@@ -1,6 +1,26 @@
 
 #include "Audio.hpp"
-#include "../Utils.hpp"
+
+
+void FillBuffer(float* buffer, Stereo(*chain)(void)) 
+{
+	for (int i = 0; i < CHANNELS * BUFFER_SIZE;) 
+	{ 
+		Stereo w = chain();
+		buffer[i++] = w.left;
+		buffer[i++] = w.right; 
+	}
+}
+
+void FillBuffer(float* buffer, Sample(*chain)(void)) 
+{
+	for (int i = 0; i < CHANNELS * BUFFER_SIZE;) 
+	{ 
+		Sample w = chain();
+		buffer[i++] = w; 
+		buffer[i++] = w; 
+	}
+}
 
 
 

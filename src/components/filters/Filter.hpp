@@ -1,6 +1,5 @@
 #pragma once
 #include "../Effect.hpp"
-#include "../../utils/Utils.hpp"
 
 class Filter : public Effect
 {

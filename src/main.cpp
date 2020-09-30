@@ -1,4 +1,3 @@
-#include "utils/Utils.hpp"
 #include "utils/gpio/gpio.hpp"
 #include "utils/audio/Audio.hpp"
 #include "utils/midi/Midi.hpp"
@@ -43,7 +42,8 @@ ADSR kenv1{ 0, 0.09, 0, 0 };
 ADSR kenv2{ 0, 0.2, 0, 0 };
 
 int a = 0;
-void MidiPress(int note, int velocity) {
+void MidiPress(int note, int velocity) 
+{
     a++;
     osc.Frequency(Midi::NoteToFreq(note));
     osc.ResetPhase();
@@ -55,18 +55,16 @@ void MidiPress(int note, int velocity) {
     env2.Gate(true);
 }
 
-void MidiRelease(int note, int velocity) {
+void MidiRelease(int note, int velocity) 
+{
     a--;
     if (a == 0)env.Gate(false);
     if (a == 0)env2.Gate(false);
 }
 
 
-int main(void) {
-
-
-
-
+int main(void) 
+{
     Midi midi;
     midi.MidiPress = MidiPress;
     midi.MidiRelease = MidiRelease;
@@ -96,8 +94,8 @@ int main(void) {
 bool trig = false;
 void AudioCallback(float* buffer)
 {
-    if (gpio[31] != 1) 
-    { 
+    if (gpio[31] != 1)
+    {
         int note = Midi::NoteToScale(gpio[31] * 64 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7);
         if (!trig) MidiPress(note, 1);
         osc.Frequency(Midi::NoteToFreq(note));
@@ -109,18 +107,16 @@ void AudioCallback(float* buffer)
         trig = false;
     }
 
-    for (int i = 0; i < CHANNELS * BUFFER_SIZE;)
-    {
-        // Mono pre-effect channel
-        Sample pre = 
-            osc                       // Oscillator
+    Stereo (*master)() = [](){
+        Stereo mix =
+            osc                         // Oscillator
             .Sync(env3 * gpio[3] * 10 + 1)
             .FM(gpio[0] * 20000.0 *     // FMed by fmosc
-                fmosc                 // Frequency of fmosc dependent on osc.
+                fmosc                   // Frequency of fmosc dependent on osc.
                 .Frequency(gpio[1] * 8 * osc.Frequency()))
             >> lpf                      // Running through a lowpass filter
             .Cutoff(20000 *             // Cutoff dependend on env2
-                env2                  
+                env2
                 .Attack(gpio[20])       // Params modulated by gpio values
                 .Decay(gpio[21])
                 .Sustain(gpio[22])
@@ -130,32 +126,37 @@ void AudioCallback(float* buffer)
             .Decay(gpio[17])
             .Sustain(gpio[18])
             .Release(gpio[19])
-            >> lpf2.Cutoff(20000);      // Running through a lowpass filter
+            >> lpf2.Cutoff(20000)       // Running through a lowpass filter
+            >> StereoEffect{            // Running through stereo chorus
+                chorus1
+                .Intensity(0.5)
+                .Frequency(0.20)
+                .Feedback(0.1),
+                chorus2
+                .Intensity(0.5)
+                .Frequency(0.30)
+                .Feedback(0.1) }
+            >> StereoEffect{            // Running through stereo delay
+                delay1
+               .Mix(gpio[2])            // Mix modulated by gpio value
+               .Time(0.300)
+               .Feedback(0.4),
+               delay2
+               .Mix(gpio[2])            // Mix modulated by gpio value
+               .Time(0.320)
+               .Feedback(0.4) };
 
-        // Left stereo channel
-        Sample post1 = 0.5 * pre        // Post processing on pre
-            >> chorus1                  // Running through chorus
-            .Intensity(0.5)
-            .Frequency(0.20)
-            .Feedback(0.1)
-            >> delay1                   // Running through delay
-            .Mix(gpio[2])               // Mix modulated by gpio value 
-            .Time(0.300)
-            .Feedback(0.4);
+        return mix;
+    };
 
-        // Right stereo channel
-        Sample post2 = 0.5 * pre        // Post processing on pre
-            >> chorus2                  // Running through chorus
-            .Intensity(0.5)
-            .Frequency(0.30)
-            .Feedback(0.1)
-            >> delay2                   // Running through delay
-            .Mix(gpio[2])               // Mix modulated by gpio value 
-            .Time(0.320)
-            .Feedback(0.4);
-
-        // Limit value between -1 and 1 to prevent clipping.
-        buffer[i++] = post1 > 1 ? 1 : post1 < -1 ? -1 : post1;
-        buffer[i++] = post2 > 1 ? 1 : post2 < -1 ? -1 : post2;
-    }
+    FillBuffer(buffer, master);
 }
+
+
+
+
+
+/*
+
+            
+        */
