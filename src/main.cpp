@@ -22,6 +22,8 @@ Oscillator lfo;
 Oscillator osc;
 ADSR env{ 0, 0.6, 1, 0.3 };
 ADSR env2{ 0, 0.3, 0.2, 0.3 };
+ADSR env3{ 0, 1.8, 0, 0 };
+
 Oscillator fmosc;
 LPF lpf;
 LPF lpf2;
@@ -49,6 +51,7 @@ void MidiPress(int note, int velocity) {
     env.Trigger();
     env.Gate(true);
     env2.Trigger();
+    env3.Trigger();
     env2.Gate(true);
 }
 
@@ -71,10 +74,10 @@ int main(void) {
     reverb1.Offset(0.0032);
     reverb2.Offset(0.0038);
 
-    osc.waveTable = new Wavetables::Triangle;
+    osc.waveTable = new Wavetables::Saw;
     lfo.waveTable = new Wavetables::Triangle;
     fmosc.waveTable = new Wavetables::Triangle;
-
+    
     kick.waveTable = new Wavetables::Sine;
     kick.Frequency(60);
 
@@ -110,13 +113,14 @@ void AudioCallback(float* buffer)
     {
         // Mono pre-effect channel
         Sample pre = 
-            ++osc                       // Oscillator
-            .FM(gpio[0] * 20000.0 *         // FMed by fmosc
-                ++fmosc                 // Frequency of fmosc dependent on osc.
+            osc                       // Oscillator
+            .Sync(env3 * gpio[3] * 10 + 1)
+            .FM(gpio[0] * 20000.0 *     // FMed by fmosc
+                fmosc                 // Frequency of fmosc dependent on osc.
                 .Frequency(gpio[1] * 8 * osc.Frequency()))
             >> lpf                      // Running through a lowpass filter
-            .Cutoff(20000 *      // Cutoff dependend on env2
-                ++env2                  
+            .Cutoff(20000 *             // Cutoff dependend on env2
+                env2                  
                 .Attack(gpio[20])       // Params modulated by gpio values
                 .Decay(gpio[21])
                 .Sustain(gpio[22])
