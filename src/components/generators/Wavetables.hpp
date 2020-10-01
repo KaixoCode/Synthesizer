@@ -2,26 +2,26 @@ namespace Wavetables
 {
     struct WaveTable 
     {
-        virtual double value(double) = 0;
+        virtual double Value(double) = 0;
     };
 
     struct Saw : public WaveTable 
     {
-        double value(double) override;
+        double Value(double) override;
     };
 
     struct Sine : public WaveTable
     {
-        double value(double) override;
+        double Value(double) override;
     };
 
     struct Square : public WaveTable
     {
-        double value(double) override;
+        double Value(double) override;
     };
 
     struct Triangle : public WaveTable
     {
-        double value(double) override;
+        double Value(double) override;
     };
 }

@@ -14,7 +14,7 @@ Sample Oscillator::NextSample()
         syncCounter = 0;
         phase = 0;
     }
-    sample = waveTable->value(phase) * am;
+    sample = waveTable->Value(phase) * am;
     fm = 0;
     am = 1;
     return sample;
