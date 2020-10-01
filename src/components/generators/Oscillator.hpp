@@ -13,6 +13,7 @@ private:
 
     double fm = 0;
     double am = 1;
+    double detune = 0;
 
     double frequency = 60; // Hz
 public:
@@ -33,6 +34,7 @@ public:
     void ResetPhase();
 
     Oscillator& FM(Sample); // Frequency modulate
+    Oscillator& Detune(double); // Frequency modulate
     Oscillator& AM(Sample); // Amplitude modulate
 
     Oscillator& Sync(double); // Amplitude modulate

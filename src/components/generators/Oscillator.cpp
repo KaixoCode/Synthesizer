@@ -4,7 +4,10 @@
 
 Sample Oscillator::NextSample()
 {
-    double delta = (sync * frequency + fm) * (2 * M_PI) / (double)SAMPLE_RATE;
+    double f = frequency;
+    if (detune >= 0) f *= detune + 1;
+    else f *= 1/(-detune + 1);
+    double delta = (sync * (f) + fm) * (2 * M_PI) / (double)SAMPLE_RATE;
     syncCounter += delta / (2 * M_PI);
     phase = std::fmod((2 * M_PI) + phase + delta, (2 * M_PI));
     if (syncCounter > sync) {
@@ -30,6 +33,12 @@ void Oscillator::ResetPhase()
 Oscillator& Oscillator::FM(Sample fm)
 {
     this->fm = fm;
+    return *this;
+}
+
+Oscillator& Oscillator::Detune(double f)
+{
+    this->detune = f;
     return *this;
 }
 
