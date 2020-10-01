@@ -163,15 +163,20 @@ public:
 		color(NULL),
 		m_pDWriteFactory(NULL)
 	{
-		thread = std::thread(
-			[this]()
-			{
-				Start();
-				Clean();
-				exit(0);
-			}
-		);
+		//thread = std::thread(
+		//	[this]()
+		//	{
+		//		Start();
+		//		Clean();
+		//		exit(0);
+		//	}
+		//);
 	};
+
+	void Launch() {
+		Start();
+		Clean();
+	}
 
 	~Window()
 	{

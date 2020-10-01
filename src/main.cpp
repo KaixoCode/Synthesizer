@@ -80,10 +80,7 @@ int main(void)
     Audio::Start();    
     Audio::SetCallback(AudioCallback);
    
-    while (true)
-    {
-
-    }
+    gpio.Start();
 
     Audio::Clean();
     return 0;
