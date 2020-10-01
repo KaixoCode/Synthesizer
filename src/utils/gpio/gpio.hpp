@@ -15,23 +15,33 @@ class Synth : Window
     void Draw() {
         Background({ 0, 0, 0 });
         Fill({ 1, 1, 1, 1 });
-        DrawString(L"O S C   O N E", 13, 200, 30);
+        DrawString(L"O S C   O N E", 13, 202, 30);
         Window::Draw(s9, 130, 30);
-        Window::Draw(k1, 235, 108);
-        Window::Draw(k2, 340, 198);
+        Fill({ 0.46, 0.46, 0.46, 1 });
+        DrawString(L"tune", 4, 212, 70);
+        Window::Draw(k1, 235, 148);
+        DrawString(L"wave", 4, 310, 70);
+        Window::Draw(k2, 335, 148);
+        DrawString(L"sync", 4, 212, 210);
         Window::Draw(k3, 235, 288);
+        DrawString(L" fm ", 4, 310, 210);
+        Window::Draw(k4, 335, 288);
+
+        Fill({ 1, 1, 1, 1 });
+        DrawString(L"O S C   T W O", 13, 402, 170);
+        Window::Draw(s10, 600, 30);
+        Fill({ 0.46, 0.46, 0.46, 1 });
+        DrawString(L"tune", 4, 413, 210);
+        Window::Draw(k5, 440, 288);
+        DrawString(L"wave", 4, 512, 210);
+        Window::Draw(k6, 540, 288);
         
-        int mo = 300;
-        DrawString(L"O S C   T W O", 13, 200 + mo, 30);
-        Window::Draw(s10, 130 + mo, 30);
-        Window::Draw(k4, 340 + mo, 108);
-        Window::Draw(k5, 235 + mo, 198);
-        Window::Draw(k6, 340 + mo, 288);
 
 
         int dx = 70, x = 30 - dx, y = height - 330;
         
         Window::Draw(sensor1, x += dx, height - 430);
+        Fill({ 1, 1, 1, 1 });
         DrawString(L"E N V E L O P E   1", 19, (x += 30) + dx, y - 38);
         Window::Draw(s1, x += dx, y);
         Window::Draw(s2, x += dx, y);
@@ -48,11 +58,11 @@ class Synth : Window
 
 public:
     Synth(std::array<double, PIN_AMOUNT> &params) :
-        k1(params[0], 0), 
+        k1(params[0], 0.5), 
         k2(params[1], 0),
         k3(params[2], 0),
         k4(params[3], 0),
-        k5(params[4], 0),
+        k5(params[4], 0.5),
         k6(params[5], 0),
         k7(params[6], 0),
         k8(params[7], 0),

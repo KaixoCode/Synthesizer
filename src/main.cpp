@@ -18,12 +18,12 @@ GPIO gpio;
 void AudioCallback(float *buffer);
 
 Oscillator lfo;
-Oscillator osc;
+Oscillator osc1;
+Oscillator osc2;
 ADSR env{ 0, 0.6, 1, 0.3 };
 ADSR env2{ 0, 0.3, 0.2, 0.3 };
 ADSR env3{ 0, 1.8, 0, 0 };
 
-Oscillator fmosc;
 LPF lpf;
 LPF lpf2;
 Delay delay1;
@@ -45,9 +45,9 @@ int a = 0;
 void MidiPress(int note, int velocity) 
 {
     a++;
-    osc.Frequency(Midi::NoteToFreq(note));
-    osc.ResetPhase();
-    fmosc.ResetPhase();
+    osc1.Frequency(Midi::NoteToFreq(note));
+    osc1.ResetPhase();
+    osc2.ResetPhase();
     env.Trigger();
     env.Gate(true);
     env2.Trigger();
@@ -72,12 +72,10 @@ int main(void)
     reverb1.Offset(0.0032);
     reverb2.Offset(0.0038);
 
-    osc.waveTable = new Wavetables::Saw;
+    osc1.waveTable = new Wavetables::Saw;
     lfo.waveTable = new Wavetables::Triangle;
-    fmosc.waveTable = new Wavetables::Triangle;
+    osc2.waveTable = new Wavetables::Sine;
     
-    kick.waveTable = new Wavetables::Sine;
-    kick.Frequency(60);
 
     Audio::Start();    
     Audio::SetCallback(AudioCallback);
@@ -98,7 +96,7 @@ void AudioCallback(float* buffer)
     {
         int note = Midi::NoteToScale(gpio[31] * 64 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7);
         if (!trig) MidiPress(note, 1);
-        osc.Frequency(Midi::NoteToFreq(note ));
+        osc1.Frequency(Midi::NoteToFreq(note));
         trig = true;
     }
     else
@@ -108,27 +106,29 @@ void AudioCallback(float* buffer)
     }
 
     Channel master = [](){
-        Stereo mix = 0.5*
-            osc                         // Oscillator
-            .Sync(env3 * gpio[3] * 10 + 1)
-            .FM(gpio[0] * 20000.0 *     // FMed by fmosc
-                fmosc                   // Frequency of fmosc dependent on osc.
-                .Frequency(gpio[1] * 8 * osc.Frequency()).GetSample())
-            .AM(gpio[24])
-            >> lpf                      // Running through a lowpass filter
-            .Cutoff(20000 *             // Cutoff dependend on env2
+        Stereo mix = 0.5 *
+            gpio[25] * osc2
+            .Detune((gpio[4] - 0.5) * 2)
+            .Frequency(osc1.Frequency())
+            +
+            gpio[24] * osc1
+            .Detune((gpio[0] - 0.5) * 2)
+            .Sync(env3 * gpio[2] * 10 + 1)
+            .FM(std::pow(gpio[3], 2) * 20000.0 * osc2.GetSample())
+            >> lpf
+            .Cutoff(20000 *
                 env2
-                .Attack(std::pow(gpio[20], 2) * 2)       // Params modulated by gpio values
+                .Attack(std::pow(gpio[20], 2) * 2)
                 .Decay(std::pow(gpio[21], 2) * 2)
                 .Sustain(gpio[22])
                 .Release(std::pow(gpio[23], 2) * 2))
-            >> env                      // Running through an envelope
-            .Attack(std::pow(gpio[16], 2) * 2)           // Params modulated by gpio values
-            .Decay(std::pow(gpio[17], 4) * 2)
+            >> env
+            .Attack(std::pow(gpio[16], 2) * 2)
+            .Decay(std::pow(gpio[17], 2) * 2)
             .Sustain(gpio[18])
             .Release(std::pow(gpio[19], 2) * 2)
-            >> lpf2.Cutoff(20000)       // Running through a lowpass filter
-            >> StereoEffect{            // Running through stereo chorus
+            >> lpf2.Cutoff(20000)
+            >> StereoEffect{
                 chorus1
                 .Intensity(0.5)
                 .Frequency(0.20)
@@ -137,13 +137,13 @@ void AudioCallback(float* buffer)
                 .Intensity(0.5)
                 .Frequency(0.30)
                 .Feedback(0.1) }
-            >> StereoEffect{            // Running through stereo delay
+            >> StereoEffect{
                 delay1
-               .Mix(gpio[2])            // Mix modulated by gpio value
+               .Mix(gpio[7])
                .Time(0.300)
                .Feedback(0.4),
                delay2
-               .Mix(gpio[2])            // Mix modulated by gpio value
+               .Mix(gpio[7])
                .Time(0.320)
                .Feedback(0.4) };
 
@@ -152,12 +152,3 @@ void AudioCallback(float* buffer)
 
     FillBuffer(buffer, master);
 }
-
-
-
-
-
-/*
-
-            
-        */
