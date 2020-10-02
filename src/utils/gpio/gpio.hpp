@@ -17,6 +17,7 @@ class Synth : public Window
         Fill({ 1, 1, 1, 1 });
         DrawString(L"O S C   O N E", 13, 202, 30);
         Window::Draw(s9, 130, 30);
+       
         Fill({ 0.46, 0.46, 0.46, 1 });
         DrawString(L"tune", 4, 212, 70);
         Window::Draw(k1, 235, 148);
@@ -27,6 +28,11 @@ class Synth : public Window
         DrawString(L" fm ", 4, 310, 210);
         Window::Draw(k4, 335, 288);
 
+        DrawString(L"fold", 4, 417, 30);
+        Window::Draw(k7, 440, 108);
+        DrawString(L"vibra", 5, 506, 30);
+        Window::Draw(k9, 540, 108);
+
         Fill({ 1, 1, 1, 1 });
         DrawString(L"O S C   T W O", 13, 402, 170);
         Window::Draw(s10, 600, 30);
@@ -35,7 +41,9 @@ class Synth : public Window
         Window::Draw(k5, 440, 288);
         DrawString(L"wave", 4, 512, 210);
         Window::Draw(k6, 540, 288);
-        
+        DrawString(L"delay", 4, 812, 210);
+        Window::Draw(k8, 840, 288);
+
 
 
         int dx = 70, x = 30 - dx, y = height - 330;
@@ -66,8 +74,8 @@ public:
         k6(params[5], 0),
         k7(params[6], 0),
         k8(params[7], 0),
-        k9(params[7], 0),
-        k10(params[7], 0),
+        k9(params[8], 0),
+        k10(params[9], 0),
         s1(params[16], 0.0),
         s2(params[17], 0.6),
         s3(params[18], 1.0),
@@ -92,10 +100,7 @@ private:
     Synth gui{ params };
 
 public:
-    void Start() 
-    {
-        gui.Launch();
-    }
+    void Start() { gui.Launch(); }
 
     double Param(int a) const { return params[a]; };
     double operator[](int a) const { return Param(a); };
