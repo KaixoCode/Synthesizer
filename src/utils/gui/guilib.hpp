@@ -590,9 +590,9 @@ struct Knob : Drawable
 	}
 
 	~Knob() {
-		delete color1;
-		delete color2;
-		delete color3;
+		SafeRelease(&color1);
+		SafeRelease(&color2);
+		SafeRelease(&color3);
 	}
 
 	void Draw(Canvas& canvas)
@@ -674,9 +674,9 @@ struct Slider : Drawable
 	}
 
 	~Slider() {
-		delete color1;
-		delete color2;
-		delete color3;
+		SafeRelease(&color1);
+		SafeRelease(&color2);
+		SafeRelease(&color3);
 	}
 
 	void Draw(Canvas& canvas)
@@ -733,9 +733,9 @@ struct Sensor : Drawable
 	}
 
 	~Sensor() {
-		delete color1;
-		delete color2;
-		delete color3;
+		SafeRelease(&color1);
+		SafeRelease(&color2);
+		SafeRelease(&color3);
 	}
 
 	void Draw(Canvas& canvas)
