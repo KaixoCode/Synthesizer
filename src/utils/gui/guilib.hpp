@@ -37,7 +37,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		main();
 }
 
-namespace Bounds {
+namespace Bounds 
+{
 	const bool Ellipse(int x, int y, int cx, int cy, int w, int h) 
 	{
 		return (std::pow(x - cx, 2) / std::pow(w, 2)) + (std::pow(y - cy, 2) / std::pow(h, 2)) <= 1;
@@ -175,6 +176,10 @@ public:
 		SafeRelease(&m_pDirect2dFactory);
 		DiscardDeviceResources();
 		CoUninitialize();
+
+		delete hovering;
+		delete focussed;
+		delete newhov;
 	}
 
 	void CursorPos(int x, int y) 
@@ -189,24 +194,24 @@ public:
 		canvas->Clear(c);
 	}
 
-	void FillEllipse(int x, int y, int rx, int ry)
+	void FillEllipse(float x, float y, float rx, float ry)
 	{
-		canvas->FillEllipse(D2D1::Ellipse(D2D1::Point2(x, y), rx, ry), color);
+		canvas->FillEllipse({ {x, y}, rx, ry }, color);
 	}
 
-	void DrawEllipse(int x, int y, int rx, int ry)
+	void DrawEllipse(float x, float y, float rx, float ry)
 	{
-		canvas->DrawEllipse(D2D1::Ellipse(D2D1::Point2(x, y), rx, ry), color, strokeWidth);
+		canvas->DrawEllipse({ {x, y}, rx, ry }, color, strokeWidth);
 	}
 
-	void FillRect(int x, int y, int w, int h)
+	void FillRect(float x, float y, float w, float h)
 	{
-		canvas->FillRectangle(D2D1::Rect(x, y, x + w, y + h), color);
+		canvas->FillRectangle({ x, y, x + w, y + h }, color);
 	}
 
-	void DrawRect(int x, int y, int w, int h)
+	void DrawRect(float x, float y, float w, float h)
 	{
-		canvas->DrawRectangle(D2D1::Rect(x, y, x + w, y + h), color, strokeWidth);
+		canvas->DrawRectangle({ x, y, x + w, y + h }, color, strokeWidth);
 	}
 
 	void StrokeWidth(unsigned int s)
@@ -216,23 +221,24 @@ public:
 
 	void Fill(D2D1_COLOR_F c)
 	{
+		if (color) color->Release();
 		canvas->CreateSolidColorBrush(c, &color);
 	}
 
-	void DrawString(const WCHAR* str, const size_t len, int x, int y)
+	void DrawString(const WCHAR* str, const size_t len, float x, float y)
 	{
-		canvas->DrawTextW(str, len, m_pTextFormat, D2D1::RectF(x, y, width, height), color);
+		canvas->DrawTextW(str, len, m_pTextFormat, { x, y, (float) width, (float) height }, color);
 	}
 
 	void Draw(Drawable& t)
 	{
-		t.window = this;
+		if (!t.window) t.window = this;
 		drawables.push_back(t);
 	}
 
 	void Draw(Drawable& t, float x, float y)
 	{
-		t.window = this;
+		if (!t.window) t.window = this;
 		t.Position(x, y);
 		drawables.push_back(t);
 	}
@@ -249,6 +255,10 @@ private:
 	std::vector<KeyEvent> keyEvents;
 	IDWriteFactory* m_pDWriteFactory;
 	IDWriteTextFormat* m_pTextFormat;
+	Drawable* hovering = 0;
+	Drawable* focussed = 0;
+	Drawable* newhov = 0;
+
 
 	void Start()
 	{
@@ -371,14 +381,13 @@ private:
 		drawables.clear();
 	}
 
-	Drawable* hovering = 0;
-	Drawable* focussed = 0;
+
 	void EventHandler()
 	{
 		for (MouseEvent& e : mouseEvents) {
 			if (e.type == MouseEvent::MOVED || e.type == MouseEvent::PRESSED)
 			{
-				Drawable* newhov = 0;
+				newhov = 0;
 				for (Drawable& d : drawables)
 				{
 					if (d.WithinBounds(e.x, e.y))
@@ -562,37 +571,48 @@ struct Knob : Drawable
 	double val = 0, aval = 0;
 	float xo = 0, yo = 0;
 	double& link;
-	
-	Knob(double& link) : Drawable(), color(0), link(link)
+	SolidBrush* color1;
+	SolidBrush* color2;
+	SolidBrush* color3;
+
+	Knob(double& link) : Drawable(), color1(0), color2(0), color3(0), link(link)
 	{
 		link = val;
 	}
 
 	Knob(double& link, double val) :
 		Drawable(),
-		color(0),
+		color1(0), color2(0), color3(0), 
 		link(link),
 		aval(val)
 	{
 		link = val;
 	}
 
-	SolidBrush* color;
+	~Knob() {
+		delete color1;
+		delete color2;
+		delete color3;
+	}
+
 	void Draw(Canvas& canvas)
 	{
-		if (hovering) canvas.CreateSolidColorBrush(col1, &color);
-		else canvas.CreateSolidColorBrush(col2, &color);
-		canvas.FillEllipse({ x, y, w, h }, color);
+		if (!color1) {
+			canvas.CreateSolidColorBrush(col1, &color1);
+			canvas.CreateSolidColorBrush(col2, &color2);
+			canvas.CreateSolidColorBrush(col3, &color3);
+		}
+		if (hovering) canvas.FillEllipse({ x, y, w, h }, color1);
+		else canvas.FillEllipse({ x, y, w, h }, color2);
 		
 		double angle = val * PI * 1.7 - PI * 1.35;
 		double r = w;
 		float yp = std::sin(angle) * r;
 		float xp = std::cos(angle) * r;
-		canvas.CreateSolidColorBrush(col3, &color);
-		canvas.DrawLine({ x, y},{ x + xp, y + yp }, color, 10);
+		canvas.DrawLine({ x, y }, { x + xp, y + yp }, color3, 10);
 
 		float s = hovering ? 0.52 : 0.55;
-		canvas.FillEllipse({ x, y, w * s, h * s }, color);
+		canvas.FillEllipse({ x, y, w * s, h * s }, color3);
 		
 		val = val * 0.8 + aval * 0.2;
 		link = val;
@@ -635,34 +655,45 @@ struct Slider : Drawable
 	double val = 1, aval = 1;
 	float xo = 0, yo = 0;
 	double& link;
+	SolidBrush* color1;
+	SolidBrush* color2;
+	SolidBrush* color3;
 
-	Slider(double& link) : Drawable(), color(0), link(link)
+	Slider(double& link) : Drawable(), color1(0), color2(0), color3(0), link(link)
 	{
 		link = val;
 	}
 
 	Slider(double& link, double val) :
 		Drawable(),
-		color(0),
+		color1(0), color2(0), color3(0),
 		link(link),
 		aval(val)
 	{
 		link = val;
 	}
 
-	SolidBrush* color;
+	~Slider() {
+		delete color1;
+		delete color2;
+		delete color3;
+	}
+
 	void Draw(Canvas& canvas)
 	{
+		if (!color1) {
+			canvas.CreateSolidColorBrush(col1, &color1);
+			canvas.CreateSolidColorBrush(col2, &color2);
+			canvas.CreateSolidColorBrush(col3, &color3);
+		}
 		if (hovering) cursor = IDC_SIZENS;
 		else cursor = IDC_ARROW;
 
-		if (hovering) canvas.CreateSolidColorBrush(col1, &color);
-		else canvas.CreateSolidColorBrush(col2, &color);
-		canvas.FillRectangle({ x, y, x + w, y + h }, color);
+		if (hovering) canvas.FillRectangle({ x, y, x + w, y + h }, color1);
+		else canvas.FillRectangle({ x, y, x + w, y + h }, color2);
 
-		canvas.CreateSolidColorBrush(col3, &color);
-		if (hovering) canvas.FillRectangle({ x + 1, y + h - (float)val * (h - 20), x + w - 2, y - 18 + h - (float)val * (h - 20) }, color);
-		else canvas.FillRectangle({ x, y + h - (float)val * (h - 20), x + w, y - 20 + h - (float)val * (h - 20) }, color);
+		if (hovering) canvas.FillRectangle({ x + 1, y + h - (float)val * (h - 20), x + w - 2, y - 18 + h - (float)val * (h - 20) }, color3);
+		else canvas.FillRectangle({ x, y + h - (float)val * (h - 20), x + w, y - 20 + h - (float)val * (h - 20) }, color3);
 		
 		val = val * 0.8 + aval * 0.2;
 		link = val;
@@ -692,21 +723,32 @@ struct Sensor : Drawable
 	double val = 1;
 	float xo = 0, yo = 0;
 	double& link;
+	SolidBrush* color1;
+	SolidBrush* color2;
+	SolidBrush* color3;
 
-	Sensor(double& link) : Drawable(), color(0), link(link)
+	Sensor(double& link) : Drawable(), color1(0), color2(0), color3(0), link(link)
 	{
 		link = 1;
 	}
 
-	SolidBrush* color;
+	~Sensor() {
+		delete color1;
+		delete color2;
+		delete color3;
+	}
+
 	void Draw(Canvas& canvas)
 	{
-		canvas.CreateSolidColorBrush(col3, &color);
-		canvas.FillRectangle({ x, y, x + w, y + h }, color);
+		if (!color1) {
+			canvas.CreateSolidColorBrush(col1, &color1);
+			canvas.CreateSolidColorBrush(col2, &color2);
+			canvas.CreateSolidColorBrush(col3, &color3);
+		}
+		canvas.FillRectangle({ x, y, x + w, y + h }, color3);
 		
-		if (hovering) canvas.CreateSolidColorBrush(col1, &color);
-		else canvas.CreateSolidColorBrush(col2, &color);
-		canvas.FillRectangle({ x, y + h - (float)val*h, x + w, y + h }, color);
+		if (hovering) canvas.FillRectangle({ x, y + h - (float)val * h, x + w, y + h }, color1);
+		else canvas.FillRectangle({ x, y + h - (float)val * h, x + w, y + h }, color2);
 	}
 
 	bool WithinBounds(int x, int y)
