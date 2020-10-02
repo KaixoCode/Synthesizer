@@ -1,20 +1,21 @@
 #include "Oscillator.hpp"
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <algorithm>
 
 Sample Oscillator::NextSample()
 {
     double f = frequency;
     if (detune >= 0) f *= detune + 1;
     else f *= 1/(-detune + 1);
-    double delta = (sync * (f) + fm) * (2 * M_PI) / (double)SAMPLE_RATE;
-    syncCounter += delta / (2 * M_PI);
-    phase = std::fmod((2 * M_PI) + phase + delta, (2 * M_PI));
-    if (syncCounter > sync) {
-        syncCounter = 0;
-        phase = 0;
-    }
-    sample = waveTable->Value(phase) * am;
+    
+    double delta = (f + fm) / (double)SAMPLE_RATE;
+    phase = std::fmod(1 + phase + delta, 1);
+    
+    double p = phase;
+    if (phaseDistort) p = std::max(std::min(phaseDistort(phase), 1.0), 0.0);
+    
+    sample = wavetable->Value(p) * am;
     fm = 0;
     am = 1;
     return sample;
@@ -54,6 +55,12 @@ Oscillator& Oscillator::Frequency(double f)
     return *this;
 }
 
+Oscillator& Oscillator::WTP(double f)
+{
+    wavetable->Position(f);
+    return *this;
+}
+
 double Oscillator::Frequency()
 {
     return frequency;
@@ -66,6 +73,18 @@ double Oscillator::Phase()
 
 Oscillator& Oscillator::Sync(double o) 
 {
-    sync = o;
+    wavetable->Sync(o);
+    return *this;
+}
+
+Oscillator& Oscillator::PhaseDistort(std::function<double(double)> pd)
+{
+    phaseDistort = pd;
+    return *this;
+}
+
+Oscillator& Oscillator::Wavetable(Wavetables::Wavetable* wt)
+{
+    wavetable = wt;
     return *this;
 }

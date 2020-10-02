@@ -2,13 +2,12 @@
 #include "../../utils/audio/Audio.hpp"
 #include "../Generator.hpp"
 #include "Wavetables.hpp"
-
+#include <memory>
 class Oscillator : public Generator
 {
 private:
+    std::function<double(double)> phaseDistort = [](double a) { return a; };
     double phase = 0;
-    double sync = 1;
-    double syncCounter = 0;
     Sample sample = 0;
 
     double fm = 0;
@@ -16,16 +15,14 @@ private:
     double detune = 0;
 
     double frequency = 60; // Hz
+
+    Wavetables::Wavetable* wavetable = new Wavetables::Sine;
 public:
+
+    ~Oscillator() { delete wavetable; }
 
     Oscillator& Frequency(double f);
     double Frequency();
-
-    Wavetables::WaveTable* waveTable = new Wavetables::Sine;
-
-    Oscillator() {};
-
-    ~Oscillator() { delete waveTable; };
 
     Sample NextSample() override;
     Sample GetSample() override;
@@ -33,10 +30,12 @@ public:
     double Phase();
     void ResetPhase();
 
+
+    Oscillator& Wavetable(Wavetables::Wavetable*); // Frequency modulate
     Oscillator& FM(Sample); // Frequency modulate
     Oscillator& Detune(double); // Frequency modulate
     Oscillator& AM(Sample); // Amplitude modulate
-
-    Oscillator& Sync(double); // Amplitude modulate
+    Oscillator& WTP(double); // Wavetable position
+    Oscillator& PhaseDistort(std::function<double(double)>);
+    Oscillator& Sync(double); // Hard sync
 };
-
