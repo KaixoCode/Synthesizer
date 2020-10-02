@@ -1,7 +1,5 @@
 #include "LPF.hpp"
 #include "../../utils/audio/Audio.hpp"
-#define _USE_MATH_DEFINES
-#include <cmath>
 
 
 Sample LPF::Apply(Sample s)

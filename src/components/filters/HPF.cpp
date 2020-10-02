@@ -1,7 +1,6 @@
 #include "HPF.hpp"
 #include "../../utils/audio/Audio.hpp"
-#define _USE_MATH_DEFINES
-#include <cmath>
+
 
 
 Sample HPF::Apply(Sample s)

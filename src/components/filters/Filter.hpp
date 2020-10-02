@@ -1,6 +1,9 @@
 #pragma once
 #include "../Effect.hpp"
 
+#define M_PI 3.14159265359
+#include <cmath>
+
 class Filter : public Effect
 {
 protected:
