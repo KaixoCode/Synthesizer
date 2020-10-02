@@ -3,10 +3,13 @@
 #include "../Generator.hpp"
 #include "Wavetables.hpp"
 #include <memory>
+
+typedef double (*PhaseFunction)(double);
+
 class Oscillator : public Generator
 {
 private:
-    std::function<double(double)> phaseDistort = [](double a) { return a; };
+    PhaseFunction phaseDistort = [](double a) { return a; };
     double phase = 0;
     Sample sample = 0;
 
@@ -36,6 +39,6 @@ public:
     Oscillator& Detune(double); // Frequency modulate
     Oscillator& AM(Sample); // Amplitude modulate
     Oscillator& WTP(double); // Wavetable position
-    Oscillator& PhaseDistort(std::function<double(double)>);
+    Oscillator& PhaseDistort(PhaseFunction);
     Oscillator& Sync(double); // Hard sync
 };

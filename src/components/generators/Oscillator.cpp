@@ -77,7 +77,7 @@ Oscillator& Oscillator::Sync(double o)
     return *this;
 }
 
-Oscillator& Oscillator::PhaseDistort(std::function<double(double)> pd)
+Oscillator& Oscillator::PhaseDistort(PhaseFunction pd)
 {
     phaseDistort = pd;
     return *this;
