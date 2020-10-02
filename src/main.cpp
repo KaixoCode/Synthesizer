@@ -11,11 +11,10 @@
 #include "components/effects/Phaser.hpp"
 #include "components/effects/Reverb.hpp"
 
-
 GPIO gpio;
 
 
-void AudioCallback(float *buffer);
+void AudioCallback(Buffer& buffer);
 
 Oscillator lfo;
 Oscillator osc1;
@@ -72,12 +71,13 @@ int main(void)
     reverb1.Offset(0.0032);
     reverb2.Offset(0.0038);
 
-    osc1.waveTable = new Wavetables::Saw;
-    lfo.waveTable = new Wavetables::Triangle;
-    osc2.waveTable = new Wavetables::Sine;
+    osc1.Wavetable(new Wavetables::Basic);
+    lfo.Wavetable(new Wavetables::Basic);
+    lfo.Frequency(10);
+    osc2.Wavetable(new Wavetables::Basic);
     
 
-    Audio::Start();    
+    Audio::Start();
     Audio::SetCallback(AudioCallback);
    
     gpio.Start();
@@ -85,9 +85,56 @@ int main(void)
     Audio::Clean();
     return 0;
 }
+Channel master = []() {
+    Stereo mix = 0.5 *
+        gpio[25] * osc2
+        .Detune((gpio[4] - 0.5) * 2)
+        .Frequency(osc1.Frequency())
+        .WTP(gpio[5])
+        +
+        gpio[24] * osc1
+        .PhaseDistort([](double a) { return std::pow(std::abs(min((4 * gpio[6] + 1), 2) * (a - (1.0 / min((4 * gpio[6] + 1), 2)))), (4 * gpio[6] + 1)); })
+        .Detune((gpio[0] - 0.5) * 2 + lfo * gpio[8] * 0.1)
+        .Sync(env3 * gpio[2] * 10 + 1)
+        .FM(std::pow(gpio[3], 2) * 20000.0 * osc2.GetSample())
+        .WTP(gpio[1])
+        >> lpf
+        .Cutoff(20000 *
+            env2
+            .Attack(std::pow(gpio[20], 2) * 2)
+            .Decay(std::pow(gpio[21], 2) * 2)
+            .Sustain(gpio[22])
+            .Release(std::pow(gpio[23], 2) * 2))
+        >> env
+        .Attack(std::pow(gpio[16], 2) * 2)
+        .Decay(std::pow(gpio[17], 2) * 2)
+        .Sustain(gpio[18])
+        .Release(std::pow(gpio[19], 2) * 2)
+        >> lpf2.Cutoff(20000)
+        >> StereoEffect{
+            chorus1
+            .Intensity(0)
+            .Frequency(0.20)
+            .Feedback(0.1),
+            chorus2
+            .Intensity(0)
+            .Frequency(0.30)
+            .Feedback(0.1) }
+        >> StereoEffect{
+            delay1
+           .Mix(gpio[7])
+           .Time(0.300)
+           .Feedback(0.4),
+           delay2
+           .Mix(gpio[7])
+           .Time(0.320)
+           .Feedback(0.4) };
+
+    return mix;
+};
 
 bool trig = false;
-void AudioCallback(float* buffer)
+void AudioCallback(Buffer& buffer)
 {
     if (gpio[31] != 1)
     {
@@ -102,50 +149,6 @@ void AudioCallback(float* buffer)
         trig = false;
     }
 
-    Channel master = [](){
-        Stereo mix = 0.5 *
-            gpio[25] * osc2
-            .Detune((gpio[4] - 0.5) * 2)
-            .Frequency(osc1.Frequency())
-            +
-            gpio[24] * osc1
-            .Detune((gpio[0] - 0.5) * 2)
-            .Sync(env3 * gpio[2] * 10 + 1)
-            .FM(std::pow(gpio[3], 2) * 20000.0 * osc2.GetSample())
-            >> lpf
-            .Cutoff(20000 *
-                env2
-                .Attack(std::pow(gpio[20], 2) * 2)
-                .Decay(std::pow(gpio[21], 2) * 2)
-                .Sustain(gpio[22])
-                .Release(std::pow(gpio[23], 2) * 2))
-            >> env
-            .Attack(std::pow(gpio[16], 2) * 2)
-            .Decay(std::pow(gpio[17], 2) * 2)
-            .Sustain(gpio[18])
-            .Release(std::pow(gpio[19], 2) * 2)
-            >> lpf2.Cutoff(20000)
-            >> StereoEffect{
-                chorus1
-                .Intensity(0.5)
-                .Frequency(0.20)
-                .Feedback(0.1),
-                chorus2
-                .Intensity(0.5)
-                .Frequency(0.30)
-                .Feedback(0.1) }
-            >> StereoEffect{
-                delay1
-               .Mix(gpio[7])
-               .Time(0.300)
-               .Feedback(0.4),
-               delay2
-               .Mix(gpio[7])
-               .Time(0.320)
-               .Feedback(0.4) };
-
-        return mix;
-    };
-
+    
     FillBuffer(buffer, master);
 }

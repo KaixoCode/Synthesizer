@@ -3,8 +3,11 @@
 #define BUFFER_SIZE 512
 #define CHANNELS 2
 
+#include <functional>
+#include <array>
 typedef double Sample;
 
+typedef std::array<float, CHANNELS* BUFFER_SIZE> Buffer;
 
 struct Stereo
 {
@@ -12,16 +15,22 @@ struct Stereo
     Sample right;
 };
 
-typedef Stereo(*Channel)(void);
+//typedef std::function<Stereo(void)> Channel;
+//typedef std::function<Sample(void)> MonoChannel;
+//typedef std::function<void(Buffer&)> BufferCallback;
+
+typedef Stereo (*Channel)(void);
+typedef Sample (*MonoChannel)(void) ;
+typedef void (*BufferCallback)(Buffer&);
 
 
-void FillBuffer(float* buffer, Stereo(*chain)(void));
+void FillBuffer(Buffer& buffer, Channel& chain);
 
-void FillBuffer(float* buffer, Sample(*chain)(void));
+void FillBuffer(Buffer& buffer, MonoChannel& chain);
 
 namespace Audio {
 
     int Start();
     void Clean();
-    void SetCallback(void func(float*));
+    void SetCallback(BufferCallback);
 }

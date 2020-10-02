@@ -1,18 +1,17 @@
 
 #include "Audio.hpp"
 
-
-void FillBuffer(float* buffer, Stereo(*chain)(void)) 
+void FillBuffer(Buffer& buffer, Channel& chain)
 {
 	for (int i = 0; i < CHANNELS * BUFFER_SIZE;) 
 	{ 
 		Stereo w = chain();
 		buffer[i++] = w.left;
-		buffer[i++] = w.right; 
+		buffer[i++] = w.right;
 	}
 }
 
-void FillBuffer(float* buffer, Sample(*chain)(void)) 
+void FillBuffer(Buffer& buffer, MonoChannel& chain)
 {
 	for (int i = 0; i < CHANNELS * BUFFER_SIZE;) 
 	{ 
@@ -124,18 +123,19 @@ namespace Audio {
 #include <complex>
 #include <valarray>
 
+
 namespace Audio {
 
 	static int playCallback(const void*, void*, unsigned long, const PaStreamCallbackTimeInfo*, PaStreamCallbackFlags, void*);
 
 	// Buffers
-	static float buffer[CHANNELS * BUFFER_SIZE];
+	static Buffer buffer;
 
 	PaError err;
 	PaStream* stream;
 
 	// Callback method
-	void (*Callback)(float*);
+	std::function<void(Buffer&)> Callback;
 
 	// Init portaudio
 	int Start() {
@@ -178,7 +178,7 @@ namespace Audio {
 		unsigned int i;
 
 		// Call the callback method to request data
-		if (Callback) Callback(buffer);
+		Callback(buffer);
 
 		for (i = 0; i < CHANNELS*framesPerBuffer; i++) {
 			*out++ = buffer[i];
@@ -187,7 +187,7 @@ namespace Audio {
 	}
 
 	// Sets the callback
-	void SetCallback(void func(float*)) {
+	void SetCallback(BufferCallback func) {
 		Callback = func;
 	}
 }
