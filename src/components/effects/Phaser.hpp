@@ -1,4 +1,5 @@
 #pragma once
+#include "../Effect.hpp"
 #include "Delay.hpp"
 #include "../../utils/audio/Audio.hpp"
 
