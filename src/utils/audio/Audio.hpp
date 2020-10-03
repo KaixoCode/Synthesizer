@@ -28,5 +28,5 @@ namespace Audio {
 
     int Start();
     void Clean();
-    void SetCallback(void (*BufferCallback)(Buffer&));
+    void SetCallback(BufferCallback);
 }

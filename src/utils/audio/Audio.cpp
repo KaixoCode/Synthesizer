@@ -39,7 +39,7 @@ namespace Audio {
 	static float buffer[2][CHANNELS * BUFFER_SIZE];
 
 	// Callback method
-	void (*Callback)(float*);
+	std::function<void(Buffer&)> Callback;
 
 	// Handle thread
 	std::thread handleThread;
@@ -85,7 +85,7 @@ namespace Audio {
 			bid = (bid + 1) % 2;
 
 			// Call the callback method to request data
-			if (Callback) Callback(buffer[(bid + 1) % 2]);
+			Callback(buffer[(bid + 1) % 2]);
 
 			// Send the buffer to ALSA
 			auto b = &buffer[bid][0];
@@ -111,7 +111,7 @@ namespace Audio {
 	}
 
 	// Sets the callback
-	void SetCallback(void func(float*)) {
+	void SetCallback(BufferCallback func) {
 		Callback = func;
 	}
 }
