@@ -10,6 +10,7 @@
 #include "components/effects/Chorus.hpp"
 #include "components/effects/Phaser.hpp"
 #include "components/effects/Reverb.hpp"
+#include <algorithm>
 
 GPIO gpio;
 
@@ -93,7 +94,7 @@ Channel master = []() {
         .WTP(gpio[5])
         +
         gpio[24] * osc1
-        .PhaseDistort([](double a) { return std::pow(std::abs(min((4 * gpio[6] + 1), 2) * (a - (1.0 / min((4 * gpio[6] + 1), 2)))), (4 * gpio[6] + 1)); })
+        //.PhaseDistort([](double a) { return std::pow(std::abs(std::min((4.0 * gpio[6] + 1.0), 2.0) * (a - (1.0 / min((4 * gpio[6] + 1), 2)))), (4 * gpio[6] + 1)); })
         .Detune((gpio[0] - 0.5) * 2 + lfo * gpio[8] * 0.1)
         .Sync(env3 * gpio[2] * 10 + 1)
         .FM(std::pow(gpio[3], 2) * 20000.0 * osc2.GetSample())
