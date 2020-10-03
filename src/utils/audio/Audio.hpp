@@ -1,5 +1,5 @@
 #pragma once
-#define SAMPLE_RATE (44100 * 8)
+#define SAMPLE_RATE (48000)
 #define BUFFER_SIZE 512
 #define CHANNELS 2
 
