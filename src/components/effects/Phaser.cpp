@@ -9,7 +9,7 @@ Sample Phaser::Apply(Sample a)
 		.Feedback(feedback));
 };
 
-Phaser& Phaser::Delay(double a)
+Phaser& Phaser::Gap(double a)
 {
 	d = a;
 	return *this;

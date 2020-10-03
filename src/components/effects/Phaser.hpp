@@ -13,7 +13,7 @@ class Phaser : public Effect
 
 public:
 	Phaser& Mix(double);
-	Phaser& Delay(double);
+	Phaser& Gap(double);
 	Phaser& Feedback(double);
 	Phaser& Intensity(double);
 
