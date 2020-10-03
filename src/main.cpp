@@ -86,7 +86,7 @@ int main(void)
     Audio::Clean();
     return 0;
 }
-Channel master = []() {
+Channel master = []() -> const Stereo {
     return 0.5 *
         gpio[25] * osc2
         .Detune((gpio[4] - 0.5) * 2)
