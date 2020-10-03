@@ -133,6 +133,10 @@ Channel master = []() -> const Stereo {
     return mix;
 };
 
+MonoChannel master2 = []() -> Sample {
+    return osc1;
+};
+
 bool trig = false;
 void AudioCallback(Buffer& buffer)
 {
@@ -150,5 +154,5 @@ void AudioCallback(Buffer& buffer)
     }
 
     
-    FillBuffer(buffer, master);
+    FillBuffer(buffer, master2);
 }
