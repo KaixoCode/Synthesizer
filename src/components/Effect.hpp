@@ -18,7 +18,7 @@ struct StereoEffect
 Sample operator>>(Sample b, Effect& a);
 
 
-Stereo operator>>(Sample b, const StereoEffect& a);
+Stereo operator>>(Sample b, StereoEffect& a);
 
-Stereo operator>>(Stereo& b, const StereoEffect& a);
+Stereo operator>>(Stereo b, StereoEffect& a);
 
