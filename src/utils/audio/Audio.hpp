@@ -15,10 +15,6 @@ struct Stereo
     Sample right;
 };
 
-//typedef std::function<Stereo(void)> Channel;
-//typedef std::function<Sample(void)> MonoChannel;
-//typedef std::function<void(Buffer&)> BufferCallback;
-
 typedef const Stereo (*Channel)(void);
 typedef Sample (*MonoChannel)(void) ;
 typedef void (*BufferCallback)(Buffer&);
