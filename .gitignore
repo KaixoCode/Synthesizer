@@ -40,7 +40,6 @@ Debug/*
 GUITest.dir/*
 CMakeFiles/
 bin/*
-libs/*
 *.cmake
 x64/
 *.user

@@ -60,7 +60,7 @@ if (UNIX)
 	find_package(ALSA REQUIRED)
 	
 	include_directories(
-		libs/rtmidi-4.0.0/
+		libs/rtmidi/
 	)
 
 	add_executable(Synthesizer
@@ -81,7 +81,7 @@ if (WIN32)
 	)
 
 	target_include_directories(Synthesizer PUBLIC
-		libs/rtmidi-4.0.0/
+		libs/rtmidi/
 		libs/portaudio/include/
 	)
 	
