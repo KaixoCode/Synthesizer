@@ -107,12 +107,13 @@ public:
 #ifdef WIN32
     void Start() { gui.Launch(); }
 #endif
-       
+
+#ifdef __linux__
     void Start() 
     {
         while (true) {};
     }
-
+#endif
     double Param(int a) const { return params[a]; };
     double operator[](int a) const { return Param(a); };
 };
