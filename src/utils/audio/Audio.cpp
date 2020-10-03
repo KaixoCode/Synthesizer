@@ -60,8 +60,8 @@ namespace Audio {
 		if ((err = snd_pcm_set_params(handle,
 			SND_PCM_FORMAT_FLOAT_LE,        // Float values (-1, 1)
 			SND_PCM_ACCESS_RW_INTERLEAVED,  // Interleaved
-			1,                       // Amount of channels
-			SAMPLE_RATE,                    // Sample rate
+			CHANNELS,                       // Amount of channels
+			SAMPLE_RATE/8,                    // Sample rate
 			1,                              // Soft resampling
 			50000)) < 0) {                  // Latency
 			printf("Playback open error: %s\n", snd_strerror(err));
