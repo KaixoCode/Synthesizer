@@ -97,10 +97,21 @@ class GPIO
 
 private:
     std::array<double, PIN_AMOUNT> params;
+    
+#ifdef WIN32
     Synth gui{ params };
+#endif
 
 public:
+
+#ifdef WIN32
     void Start() { gui.Launch(); }
+#endif
+       
+    void Start() 
+    {
+        while (true) {};
+    }
 
     double Param(int a) const { return params[a]; };
     double operator[](int a) const { return Param(a); };
