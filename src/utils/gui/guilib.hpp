@@ -19,6 +19,13 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #define HINST_THISCOMPONENT ((HINSTANCE)&__ImageBase)
 #endif
 #define PI 3.14159265359
+
+typedef ID2D1HwndRenderTarget Canvas;
+typedef ID2D1SolidColorBrush SolidBrush;
+typedef ID2D1LinearGradientBrush GradientBrush;
+
+class Window;
+
 template<class Interface>
 inline void SafeRelease(Interface** ppInterfaceToRelease)
 {
@@ -50,9 +57,11 @@ namespace Bounds
 	}
 };
 
-typedef ID2D1HwndRenderTarget Canvas;
-typedef ID2D1SolidColorBrush SolidBrush;
-typedef ID2D1LinearGradientBrush GradientBrush;
+/*
+
+	E V E N T S
+	key/mouse event classes
+*/
 
 struct Event 
 {
@@ -109,7 +118,12 @@ struct MouseEvent : Event
 	int y;
 };
 
-class Window;
+/*
+
+	D R A W A B L E
+	basis of any drawable object
+*/
+
 struct Drawable
 {
 	bool hovering = false;
@@ -130,6 +144,12 @@ struct Drawable
 	virtual void KeyPressed(KeyEvent&) {};
 	virtual void KeyReleased(KeyEvent&) {};
 };
+
+/*
+
+	W I N D O W
+	abstract window class.
+*/
 
 class Window
 {
@@ -156,7 +176,6 @@ public:
 	virtual void KeyPressed(KeyEvent&) {};
 	virtual void KeyReleased(KeyEvent&) {};
 
-
 	Window() :
 		m_hwnd(NULL),
 		m_pDirect2dFactory(NULL),
@@ -165,11 +184,6 @@ public:
 		m_pDWriteFactory(NULL)
 	{
 	};
-
-	void Launch() {
-		Start();
-		Clean();
-	}
 
 	~Window()
 	{
@@ -180,6 +194,12 @@ public:
 		delete hovering;
 		delete focussed;
 		delete newhov;
+	}
+
+	void Launch()
+	{
+		Start(); // Loops until window has been closed
+		Clean();
 	}
 
 	void CursorPos(int x, int y) 
@@ -259,7 +279,6 @@ private:
 	Drawable* focussed = 0;
 	Drawable* newhov = 0;
 
-
 	void Start()
 	{
 		HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
@@ -277,7 +296,6 @@ private:
 		static const FLOAT msc_fontSize = 24;
 		if (SUCCEEDED(hr))
 		{
-			// Create a DirectWrite text format object.
 			hr = m_pDWriteFactory->CreateTextFormat(
 				msc_fontName,
 				NULL,
@@ -381,7 +399,6 @@ private:
 		drawables.clear();
 	}
 
-
 	void EventHandler()
 	{
 		for (MouseEvent& e : mouseEvents) {
@@ -437,6 +454,10 @@ private:
 		}
 		else
 		{
+			POINT pos; // Makes sure the resize cursor can appear.
+			GetCursorPos(&pos);
+			ScreenToClient(m_hwnd, &pos);
+			if (pos.x > 0 && pos.y > 0 && pos.x < width && pos.y < height)
 			SetCursor(LoadCursor(NULL, IDC_ARROW));
 		}
 
@@ -558,15 +579,18 @@ private:
 	}
 };
 
+/*
+
+	D R A W A B L E S
+	some useful drawables implementations
+*/
 
 D2D1_COLOR_F col1{ 0.099, 0.099, 0.099, 1 };
 D2D1_COLOR_F col2{ 0.09, 0.09, 0.09, 1 };
 D2D1_COLOR_F col3{ 0.42, 0.42, 0.42, 1 };
 
-
 struct Knob : Drawable
 {
-
 	float x = 0, y = 0, w = 40, h = 40;
 	double val = 0, aval = 0;
 	float xo = 0, yo = 0;
@@ -597,7 +621,8 @@ struct Knob : Drawable
 
 	void Draw(Canvas& canvas)
 	{
-		if (!color1) {
+		if (!color1) 
+		{
 			canvas.CreateSolidColorBrush(col1, &color1);
 			canvas.CreateSolidColorBrush(col2, &color2);
 			canvas.CreateSolidColorBrush(col3, &color3);
@@ -650,7 +675,6 @@ struct Knob : Drawable
 
 struct Slider : Drawable
 {
-
 	float x = 0, y = 0, w = 40, h = 300;
 	double val = 1, aval = 1;
 	float xo = 0, yo = 0;
@@ -681,7 +705,8 @@ struct Slider : Drawable
 
 	void Draw(Canvas& canvas)
 	{
-		if (!color1) {
+		if (!color1) 
+		{
 			canvas.CreateSolidColorBrush(col1, &color1);
 			canvas.CreateSolidColorBrush(col2, &color2);
 			canvas.CreateSolidColorBrush(col3, &color3);
@@ -718,7 +743,6 @@ struct Slider : Drawable
 
 struct Sensor : Drawable
 {
-
 	float x = 0, y = 0, w = 40, h = 400;
 	double val = 1;
 	float xo = 0, yo = 0;
@@ -740,7 +764,8 @@ struct Sensor : Drawable
 
 	void Draw(Canvas& canvas)
 	{
-		if (!color1) {
+		if (!color1) 
+		{
 			canvas.CreateSolidColorBrush(col1, &color1);
 			canvas.CreateSolidColorBrush(col2, &color2);
 			canvas.CreateSolidColorBrush(col3, &color3);
