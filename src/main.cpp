@@ -15,7 +15,7 @@
 GPIO gpio;
 
 
-
+void AudioCallback(Buffer& buffer);
 
 Oscillator lfo;
 Oscillator osc1;
@@ -36,8 +36,13 @@ Phaser phaser2;
 Reverb reverb1;
 Reverb reverb2;
 
+
+Oscillator kick;
+ADSR kenv1{ 0, 0.09, 0, 0 };
+ADSR kenv2{ 0, 0.2, 0, 0 };
+
 int a = 0;
-void MidiPress(int note, int velocity)
+void MidiPress(int note, int velocity) 
 {
     a++;
     osc1.Frequency(Midi::NoteToFreq(note));
@@ -50,13 +55,37 @@ void MidiPress(int note, int velocity)
     env2.Gate(true);
 }
 
-void MidiRelease(int note, int velocity)
+void MidiRelease(int note, int velocity) 
 {
     a--;
     if (a == 0)env.Gate(false);
     if (a == 0)env2.Gate(false);
 }
 
+
+int main(void) 
+{
+    Midi midi;
+    midi.MidiPress = MidiPress;
+    midi.MidiRelease = MidiRelease;
+    
+    reverb1.Offset(0.0032);
+    reverb2.Offset(0.0038);
+
+    osc1.Wavetable(new Wavetables::Basic);
+    lfo.Wavetable(new Wavetables::Basic);
+    lfo.Frequency(10);
+    osc2.Wavetable(new Wavetables::Basic);
+    
+
+    Audio::Start();
+    Audio::SetCallback(AudioCallback);
+   
+    gpio.Start();
+
+    Audio::Clean();
+    return 0;
+}
 Channel master = []() -> const Stereo {
     const Stereo mix = 0.5 *
         gpio[25] * osc2
@@ -104,9 +133,8 @@ Channel master = []() -> const Stereo {
     return mix;
 };
 
-
 bool trig = false;
-BufferCallback AudioCallback = [](Buffer& buffer) -> void
+void AudioCallback(Buffer& buffer)
 {
     if (gpio[31] != 1)
     {
@@ -121,31 +149,6 @@ BufferCallback AudioCallback = [](Buffer& buffer) -> void
         trig = false;
     }
 
-
+    
     FillBuffer(buffer, master);
-};
-
-
-int main(void) 
-{
-    Midi midi;
-    midi.MidiPress = MidiPress;
-    midi.MidiRelease = MidiRelease;
-    
-    reverb1.Offset(0.0032);
-    reverb2.Offset(0.0038);
-
-    osc1.Wavetable(new Wavetables::Basic);
-    lfo.Wavetable(new Wavetables::Basic);
-    lfo.Frequency(10);
-    osc2.Wavetable(new Wavetables::Basic);
-    
-
-    Audio::Start();
-    Audio::SetCallback(AudioCallback);
-   
-    gpio.Start();
-
-    Audio::Clean();
-    return 0;
 }
