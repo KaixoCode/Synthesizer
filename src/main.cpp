@@ -87,7 +87,7 @@ int main(void)
     return 0;
 }
 Channel master = []() {
-    Stereo& mix = 0.5 *
+    return 0.5 *
         gpio[25] * osc2
         .Detune((gpio[4] - 0.5) * 2)
         .Frequency(osc1.Frequency())
@@ -130,8 +130,6 @@ Channel master = []() {
            .Mix(gpio[7])
            .Time(0.320)
            .Feedback(0.4) };
-
-    return mix;
 };
 
 bool trig = false;
