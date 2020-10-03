@@ -19,7 +19,7 @@ struct Stereo
 //typedef std::function<Sample(void)> MonoChannel;
 //typedef std::function<void(Buffer&)> BufferCallback;
 
-typedef Stereo (*Channel)(void);
+typedef const Stereo (*Channel)(void);
 typedef Sample (*MonoChannel)(void) ;
 typedef void (*BufferCallback)(Buffer&);
 
