@@ -3,8 +3,6 @@ project (Synthesizer)
 
 add_subdirectory (libs)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
 file(GLOB SOURCE
  "src/main.cpp"
 
