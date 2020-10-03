@@ -12,7 +12,7 @@ Stereo operator>>(Sample b, const StereoEffect& a)
     return ef;
 }
 
-Stereo operator>>(Stereo& b, const StereoEffect& a)
+Stereo operator>>(Stereo b, const StereoEffect& a)
 {
     Stereo ef{ a.left.Apply(b.left), a.right.Apply(b.right) };
     return ef;
