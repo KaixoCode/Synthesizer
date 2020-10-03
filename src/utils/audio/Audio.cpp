@@ -36,7 +36,7 @@ namespace Audio {
 	const char* device = "default";            /* playback device */
 
 	// Buffers
-	static float buffer[2][CHANNELS * BUFFER_SIZE];
+	static Buffer buffer;
 
 	// Callback method
 	std::function<void(Buffer&)> Callback;
@@ -85,10 +85,10 @@ namespace Audio {
 			bid = (bid + 1) % 2;
 
 			// Call the callback method to request data
-			Callback(buffer[(bid + 1) % 2]);
+			Callback(buffer);
 
 			// Send the buffer to ALSA
-			auto b = &buffer[bid][0];
+			auto b = &buffer;
 			frames = snd_pcm_writei(handle, b, BUFFER_SIZE);
 
 			// Recover if it underran
