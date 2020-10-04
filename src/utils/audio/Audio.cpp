@@ -95,7 +95,7 @@ namespace Audio {
 
 			// Send the buffer to ALSA
 			auto b = &extraBufferCuzStuffNoWorkie[0];
-			frames = snd_pcm_writei(handle, b, BUFFER_SIZE);
+			frames = snd_pcm_writei(handle, b, BUFFER_SIZE/2);
 
 			// Recover if it underran
 			if (frames < 0) frames = snd_pcm_recover(handle, frames, 0);
