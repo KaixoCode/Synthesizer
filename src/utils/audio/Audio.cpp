@@ -27,7 +27,6 @@ void FillBuffer(Buffer& buffer, MonoChannel& chain)
 
 namespace Audio 
 {
-
 	// Stubs
 	void Handle();
 
@@ -60,7 +59,7 @@ namespace Audio
 			SND_PCM_FORMAT_FLOAT_LE,        // Float values (-1, 1)
 			SND_PCM_ACCESS_RW_INTERLEAVED,  // Interleaved
 			CHANNELS,                       // Amount of channels
-			SAMPLE_RATE,                    // Sample rate
+			SAMPLE_RATE/OVERSAMPLING,       // Sample rate
 			1,                              // Soft resampling
 			50000)) < 0) {                  // Latency
 			printf("Playback open error: %s\n", snd_strerror(err));
@@ -75,7 +74,9 @@ namespace Audio
 	// Thread that handles the output of audio buffers
 
 	bool busy = true;
-	void Handle() {
+	std::array<float, (CHANNELS* BUFFER_SIZE) / OVERSAMPLING> downsample;
+	void Handle() 
+	{
 
 		// Buffer id
 		int bid = 0;
@@ -84,9 +85,11 @@ namespace Audio
 			// Call the callback method to request data
 			Callback(buffer);
 
+			Downsample(downsample, buffer);
+
 			// Send the buffer to ALSA
-			auto b = &buffer[0];
-			frames = snd_pcm_writei(handle, b, BUFFER_SIZE);
+			auto b = &downsample[0];
+			frames = snd_pcm_writei(handle, b, BUFFER_SIZE/OVERSAMPLING);
 
 			// Recover if it underran
 			if (frames < 0) frames = snd_pcm_recover(handle, frames, 0);
@@ -94,7 +97,8 @@ namespace Audio
 	}
 
 	// Cleanup
-	void Clean() {
+	void Clean() 
+	{
 
 		// Stop the handle thread
 		busy = false;
@@ -108,8 +112,25 @@ namespace Audio
 	}
 
 	// Sets the callback
-	void SetCallback(BufferCallback func) {
+	void SetCallback(BufferCallback func) 
+	{
 		Callback = func;
+	}
+
+	void Downsample(std::array<float, CHANNELS * BUFFER_SIZE / OVERSAMPLING>& d, Buffer& b)
+	{
+		int index = 0;
+		for (int i = 0; i < CHANNELS * BUFFER_SIZE / OVERSAMPLING; i++) 
+		{
+			float avg = 0;
+			for (int j = 0; j < OVERSAMPLING; j++) 
+			{
+				avg += b[index];
+				index++;
+			}
+			avg /= OVERSAMPLING;
+			d[i] = avg;
+		}
 	}
 }
 

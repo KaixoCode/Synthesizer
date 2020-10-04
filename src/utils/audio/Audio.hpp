@@ -1,6 +1,6 @@
 #pragma once
-#define OVERSAMPLING 1
-#define SAMPLE_RATE (44100 * OVERSAMPLING)
+#define OVERSAMPLING 8
+#define SAMPLE_RATE (48000 * OVERSAMPLING)
 #define BUFFER_SIZE 512
 #define CHANNELS 2
 
