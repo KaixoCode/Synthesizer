@@ -17,7 +17,7 @@ private:
     double am = 1;
     double detune = 0;
 
-    double frequency = 60; // Hz
+    double frequency = 200; // Hz
 
     Wavetables::Wavetable* wavetable = new Wavetables::Sine;
 public:
