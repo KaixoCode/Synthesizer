@@ -155,9 +155,9 @@ void AudioCallback(Buffer& buffer)
     //    trig = false;
     //}    
     for (int i = 0; i < BUFFER_SIZE * CHANNELS;) {
-        Stereo a = master();
-        buffer[i++] = a.left;
-        buffer[i++] = a.right;
+        Sample a = osc1 >> env;
+        buffer[i++] = a;
+        buffer[i++] = a;
     }
     
     //FillBuffer(buffer, master);
