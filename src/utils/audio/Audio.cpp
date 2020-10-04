@@ -83,9 +83,6 @@ namespace Audio
 		int bid = 0;
 		while (busy) {
 
-			// Swap the buffers
-			bid = (bid + 1) % 2;
-
 			// Call the callback method to request data
 			Callback(buffer);
 
