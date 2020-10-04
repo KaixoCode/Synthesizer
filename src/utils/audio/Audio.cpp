@@ -74,6 +74,8 @@ namespace Audio {
 	}
 
 	// Thread that handles the output of audio buffers
+
+	float extraBufferCuzStuffNoWorkie[BUFFER_SIZE*CHANNELS];
 	bool busy = true;
 	void Handle() {
 
@@ -87,8 +89,12 @@ namespace Audio {
 			// Call the callback method to request data
 			Callback(buffer);
 
+			for (int i = 0; i < BUFFER_SIZE * CHANNELS; i++) {
+				extraBufferCuzStuffNoWorkie[i] = buffer[i];
+			}
+
 			// Send the buffer to ALSA
-			auto b = &(buffer.data()[0]);
+			auto b = &extraBufferCuzStuffNoWorkie[0];
 			frames = snd_pcm_writei(handle, b, BUFFER_SIZE);
 
 			// Recover if it underran
