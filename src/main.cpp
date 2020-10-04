@@ -156,7 +156,7 @@ void AudioCallback(Buffer& buffer)
     }
 
     for (int i = 0; i < BUFFER_SIZE * CHANNELS;) {
-        Sample a = master1();
+        Sample a = osc1;
         buffer[i++] = a;
         buffer[i++] = a;
     }
