@@ -71,6 +71,23 @@ namespace Audio
 		return 0;
 	}
 
+
+	void Downsample(std::array<float, CHANNELS* BUFFER_SIZE / OVERSAMPLING>& d, Buffer& b)
+	{
+		int index = 0;
+		for (int i = 0; i < CHANNELS * BUFFER_SIZE / OVERSAMPLING; i++)
+		{
+			float avg = 0;
+			for (int j = 0; j < OVERSAMPLING; j++)
+			{
+				avg += b[index];
+				index++;
+			}
+			avg /= OVERSAMPLING;
+			d[i] = avg;
+		}
+	}
+
 	// Thread that handles the output of audio buffers
 
 	bool busy = true;
@@ -115,22 +132,6 @@ namespace Audio
 	void SetCallback(BufferCallback func) 
 	{
 		Callback = func;
-	}
-
-	void Downsample(std::array<float, CHANNELS * BUFFER_SIZE / OVERSAMPLING>& d, Buffer& b)
-	{
-		int index = 0;
-		for (int i = 0; i < CHANNELS * BUFFER_SIZE / OVERSAMPLING; i++) 
-		{
-			float avg = 0;
-			for (int j = 0; j < OVERSAMPLING; j++) 
-			{
-				avg += b[index];
-				index++;
-			}
-			avg /= OVERSAMPLING;
-			d[i] = avg;
-		}
 	}
 }
 
