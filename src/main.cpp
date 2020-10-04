@@ -142,18 +142,18 @@ Channel master = []() -> const Stereo {
 bool trig = false;
 void AudioCallback(Buffer& buffer)
 {
-    if (gpio[31] != 1)
-    {
-        int note = Midi::NoteToScale(gpio[31] * 64 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7);
-        if (!trig) MidiPress(note, 1);
-        osc1.Frequency(Midi::NoteToFreq(note));
-        trig = true;
-    }
-    else
-    {
-        if (trig) MidiRelease(0, 1);
-        trig = false;
-    }
+    //if (gpio[31] != 1)
+    //{
+    //    int note = Midi::NoteToScale(gpio[31] * 64 + 24, new int[7]{ 0, 2, 3, 5, 7, 8, 10 }, 7);
+    //    if (!trig) MidiPress(note, 1);
+    //    osc1.Frequency(Midi::NoteToFreq(note));
+    //    trig = true;
+    //}
+    //else
+    //{
+    //    if (trig) MidiRelease(0, 1);
+    //    trig = false;
+    //}
 
     for (int i = 0; i < BUFFER_SIZE * CHANNELS;) {
         Sample a = osc1;
