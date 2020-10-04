@@ -54,6 +54,7 @@ void Midi::Loop()
     {
         // Get nmr of ports
         unsigned int nPorts = midiin->getPortCount();
+        std::cout << "Nubmer of MIDI ports: " << nPorts << std::endl;
 
         // Check if connected 
         if (nPorts > 1 && !connected)
