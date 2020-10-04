@@ -26,7 +26,7 @@ void FillBuffer(Buffer& buffer, MonoChannel& chain)
 #ifdef __linux__
 #include <alsa/asoundlib.h>
 #include <thread>
-
+#include <cmath>
 namespace Audio {
 
 	// Stubs
