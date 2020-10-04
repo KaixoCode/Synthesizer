@@ -2,7 +2,7 @@
 #define OVERSAMPLING 1
 #define SAMPLE_RATE (48000 * OVERSAMPLING)
 #define BUFFER_SIZE 512
-#define CHANNELS 2
+#define CHANNELS 1
 
 #include <functional>
 #include <array>
