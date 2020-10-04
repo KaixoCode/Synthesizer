@@ -10,7 +10,6 @@ file(GLOB SOURCE
  "src/utils/gpio/gpio.cpp"
 
  "src/utils/audio/Audio.hpp"
- "src/utils/audio/Audio.cpp"
 
  "src/utils/midi/Midi.hpp"
  "src/utils/midi/Midi.cpp"
