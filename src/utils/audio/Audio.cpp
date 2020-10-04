@@ -62,7 +62,7 @@ namespace Audio {
 			SND_PCM_ACCESS_RW_INTERLEAVED,  // Interleaved
 			CHANNELS,                       // Amount of channels
 			SAMPLE_RATE,                    // Sample rate
-			1,                              // Soft resampling
+			0,                              // Soft resampling
 			100000)) < 0) {                  // Latency
 			printf("Playback open error: %s\n", snd_strerror(err));
 			exit(EXIT_FAILURE);
