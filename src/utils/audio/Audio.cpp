@@ -36,7 +36,7 @@ namespace Audio {
 	const char* device = "default";            /* playback device */
 
 	// Buffers
-	static Buffer buffer[2];
+	static Buffer buffer;
 
 	// Callback method
 	std::function<void(Buffer&)> Callback;
@@ -62,8 +62,8 @@ namespace Audio {
 			SND_PCM_ACCESS_RW_INTERLEAVED,  // Interleaved
 			CHANNELS,                       // Amount of channels
 			SAMPLE_RATE,                    // Sample rate
-			0,                              // Soft resampling
-			100000)) < 0) {                  // Latency
+			1,                              // Soft resampling
+			50000)) < 0) {                  // Latency
 			printf("Playback open error: %s\n", snd_strerror(err));
 			exit(EXIT_FAILURE);
 		}
@@ -85,10 +85,10 @@ namespace Audio {
 			bid = (bid + 1) % 2;
 
 			// Call the callback method to request data
-			Callback(buffer[(bid + 1) % 2]);
+			Callback(buffer);
 
 			// Send the buffer to ALSA
-			auto b = &buffer[bid][0];
+			auto b = &buffer[0];
 			frames = snd_pcm_writei(handle, b, BUFFER_SIZE);
 
 			// Recover if it underran
