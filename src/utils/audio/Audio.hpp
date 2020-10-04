@@ -8,7 +8,8 @@
 #include <array>
 typedef double Sample;
 
-typedef std::array<float, CHANNELS * BUFFER_SIZE> Buffer;
+//typedef std::array<float, CHANNELS * BUFFER_SIZE> Buffer;
+typedef float Buffer[CHANNELS * BUFFER_SIZE];
 
 struct Stereo
 {
