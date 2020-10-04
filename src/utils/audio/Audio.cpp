@@ -88,7 +88,7 @@ namespace Audio {
 			Callback(buffer);
 
 			// Send the buffer to ALSA
-			auto b = &buffer[0];
+			auto b = &(buffer.data()[0]);
 			frames = snd_pcm_writei(handle, b, CHANNELS*BUFFER_SIZE);
 
 			// Recover if it underran
