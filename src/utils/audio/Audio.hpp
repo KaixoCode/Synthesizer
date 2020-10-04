@@ -51,10 +51,10 @@ namespace Audio
 
 	static const char* device = "default";
 	static Buffer buffer;
-	static ::array<float, (CHANNELS* BUFFER_SIZE) / OVERSAMPLING> downsample;
-	static ::function<void(Buffer&)> Callback;
-	static ::thread handleThread;
-	static  active = true;
+	static std::array<float, (CHANNELS* BUFFER_SIZE) / OVERSAMPLING> downsample;
+	static std::function<void(Buffer&)> Callback;
+	static std::thread handleThread;
+	static bool active = true;
 	static int err;
 	static snd_pcm_t* handle;
 	static snd_pcm_sframes_t frames;
