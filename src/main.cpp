@@ -89,7 +89,7 @@ int main(void)
 
 
 MonoChannel master1 = []() -> Sample {
-    return osc1 >> env;
+    return 0.5 * osc1 >> env;
 };
 
 Channel master = []() -> const Stereo {
