@@ -1,4 +1,5 @@
 #include "Midi.hpp"
+#include <iostream>
 
 void Callback(double deltatime, std::vector<unsigned char>* message, void* userData)
 {
@@ -14,7 +15,14 @@ void Callback(double deltatime, std::vector<unsigned char>* message, void* userD
             data->MidiPress(message->at(1), message->at(2));
         else if (message->at(0) == 128 && data->MidiRelease)
             data->MidiRelease(message->at(1), message->at(2));
+
+
+        std::cout << message->at(0) << ", "
+            << message->at(1) << ", "
+            << message->at(2)
+            << std::endl;
     }
+
 }
 
 Midi::Midi() 
