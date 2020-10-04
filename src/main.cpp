@@ -153,7 +153,12 @@ void AudioCallback(Buffer& buffer)
     //{
     //    if (trig) MidiRelease(0, 1);
     //    trig = false;
-    //}
+    //}    
+    for (int i = 0; i < BUFFER_SIZE * CHANNELS;) {
+        Stereo a = master();
+        buffer[i++] = a.left;
+        buffer[i++] = a.right;
+    }
     
-    FillBuffer(buffer, master);
+    //FillBuffer(buffer, master);
 }
