@@ -154,11 +154,11 @@ void AudioCallback(Buffer& buffer)
     //    if (trig) MidiRelease(0, 1);
     //    trig = false;
     //}    
-    for (int i = 0; i < BUFFER_SIZE * CHANNELS;) {
-        Sample a = 0.5 * osc1 >> env;
-        buffer[i++] = a;
-        buffer[i++] = a;
-    }
+    //for (int i = 0; i < BUFFER_SIZE * CHANNELS;) {
+    //    Sample a = 0.5 * osc1 >> env;
+    //    buffer[i++] = a;
+    //    buffer[i++] = a;
+    //}
     
-    //FillBuffer(buffer, master);
+    FillBuffer(buffer, master1);
 }
