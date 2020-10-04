@@ -90,12 +90,12 @@ namespace Audio {
 			Callback(buffer);
 
 			for (int i = 0; i < BUFFER_SIZE * CHANNELS; i++) {
-				extraBufferCuzStuffNoWorkie[i] = buffer[i];
+				extraBufferCuzStuffNoWorkie[i] = std::sin(i*0.01);
 			}
 
 			// Send the buffer to ALSA
 			auto b = &extraBufferCuzStuffNoWorkie[0];
-			frames = snd_pcm_writei(handle, b, BUFFER_SIZE/2);
+			frames = snd_pcm_writei(handle, b, BUFFER_SIZE);
 
 			// Recover if it underran
 			if (frames < 0) frames = snd_pcm_recover(handle, frames, 0);
