@@ -99,19 +99,19 @@ Channel master = []() -> const Stereo {
         .Sync(env3 * gpio[2] * 10 + 1)
         .FM(std::pow(gpio[3], 2) * 20000.0 * osc2.GetSample())
         .WTP(gpio[1])
-        >> lpf
-        .Cutoff(20000 *
-            env2
-            .Attack(std::pow(gpio[20], 2) * 2)
-            .Decay(std::pow(gpio[21], 2) * 2)
-            .Sustain(gpio[22])
-            .Release(std::pow(gpio[23], 2) * 2))
+       // >> lpf
+       // .Cutoff(20000 *
+       //     env2
+       //     .Attack(std::pow(gpio[20], 2) * 2)
+       //     .Decay(std::pow(gpio[21], 2) * 2)
+       //     .Sustain(gpio[22])
+       //     .Release(std::pow(gpio[23], 2) * 2))
         >> env
         .Attack(std::pow(gpio[16], 2) * 2)
         .Decay(std::pow(gpio[17], 2) * 2)
         .Sustain(gpio[18])
         .Release(std::pow(gpio[19], 2) * 2)
-        >> lpf2.Cutoff(20000)
+        //>> lpf2.Cutoff(20000)
         >> StereoEffect{
             chorus1
             .Intensity(0)
