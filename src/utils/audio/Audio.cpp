@@ -63,7 +63,7 @@ namespace Audio {
 			CHANNELS,                       // Amount of channels
 			SAMPLE_RATE,                    // Sample rate
 			1,                              // Soft resampling
-			50000)) < 0) {                  // Latency
+			100000)) < 0) {                  // Latency
 			printf("Playback open error: %s\n", snd_strerror(err));
 			exit(EXIT_FAILURE);
 		}
