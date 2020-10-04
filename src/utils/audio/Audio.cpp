@@ -85,10 +85,10 @@ namespace Audio {
 			bid = (bid + 1) % 2;
 
 			// Call the callback method to request data
-			Callback(buffer[bid]);
+			Callback(buffer[(bid + 1) % 2]);
 
 			// Send the buffer to ALSA
-			auto b = &buffer[bid];
+			auto b = &buffer[bid][0];
 			frames = snd_pcm_writei(handle, b, BUFFER_SIZE);
 
 			// Recover if it underran
