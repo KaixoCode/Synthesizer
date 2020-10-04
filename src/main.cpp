@@ -86,6 +86,12 @@ int main(void)
     Audio::Clean();
     return 0;
 }
+
+
+MonoChannel master1 = []() -> Sample {
+    return osc1 >> env;
+};
+
 Channel master = []() -> const Stereo {
     const Stereo mix = 0.5 *
         gpio[25] * osc2
@@ -150,5 +156,5 @@ void AudioCallback(Buffer& buffer)
     }
 
     
-    FillBuffer(buffer, master);
+    FillBuffer(buffer, master1);
 }
