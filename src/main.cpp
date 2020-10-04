@@ -72,10 +72,10 @@ int main(void)
     reverb1.Offset(0.0032);
     reverb2.Offset(0.0038);
 
-    osc1.Wavetable(new Wavetables::Basic);
-    lfo.Wavetable(new Wavetables::Basic);
+    osc1.Wavetable(new Wavetables::Sine);
+    lfo.Wavetable(new Wavetables::Sine);
     lfo.Frequency(10);
-    osc2.Wavetable(new Wavetables::Basic);
+    osc2.Wavetable(new Wavetables::Sine);
     
 
     Audio::Start();
@@ -155,6 +155,12 @@ void AudioCallback(Buffer& buffer)
         trig = false;
     }
 
+    for (int i = 0; i < BUFFER_SIZE * CHANNELS;) {
+        Sample a = master1();
+        buffer[i++] = a;
+        buffer[i++] = a;
+    }
+
     
-    FillBuffer(buffer, master1);
+    //FillBuffer(buffer, master1);
 }
