@@ -17,9 +17,9 @@ void Callback(double deltatime, std::vector<unsigned char>* message, void* userD
             data->MidiRelease(message->at(1), message->at(2));
 
 
-        std::cout << message->at(0) << ", "
-            << message->at(1) << ", "
-            << message->at(2)
+        std::cout << (int) message->at(0) << ", "
+            << (int) message->at(1) << ", "
+            << (int) message->at(2)
             << std::endl;
     }
 
@@ -54,7 +54,6 @@ void Midi::Loop()
     {
         // Get nmr of ports
         unsigned int nPorts = midiin->getPortCount();
-        std::cout << "Nubmer of MIDI ports: " << nPorts << std::endl;
 
         // Check if connected 
         if (nPorts > 1 && !connected)
